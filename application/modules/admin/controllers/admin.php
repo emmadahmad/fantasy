@@ -9,6 +9,7 @@ class Admin extends CI_Controller
         $logged_in = 1;
 
         $this->load->model ( 'fantasy/pages_model', 'pages' );
+        $this->load->model ( 'fantasy/generic_model', 'general' );
 
         $this->template->set_partial('head', 'backend/partials/head');
         $this->template->set_partial('end_content', 'backend/partials/end_content_tags');
@@ -37,14 +38,36 @@ class Admin extends CI_Controller
 
 	public function pages()
 	{
-		$content = $this->pages->get_pages();
-		//$content = $content[0]->page_content;
-		//print_array($content);
+		$content = $this->general->get_all('pages');
 		$data['content'] = $content;
 		$this->template->title('Admin', 'Manage Pages');
 
 		$this->template->set_layout('header_footer', 'backend')->
-		build('pages.php', $data);
+		build('pages/pages.php', $data);
+	}
+
+	public function add_page()
+	{
+		$content = $this->pages->get_pages();
+		//$content = $content[0]->page_content;
+		//print_array($content);
+		$data['content'] = $content;
+		$this->template->title('Admin', 'Add New Page');
+
+		$this->template->set_layout('header_footer', 'backend')->
+		build('pages/add_page.php', $data);
+	}
+
+	public function edit_page()
+	{
+		$content = $this->pages->get_pages();
+		//$content = $content[0]->page_content;
+		//print_array($content);
+		$data['content'] = $content;
+		$this->template->title('Admin', 'Update Page');
+
+		$this->template->set_layout('header_footer', 'backend')->
+		build('pages/edit_page.php', $data);
 	}
 
 	public function teams()

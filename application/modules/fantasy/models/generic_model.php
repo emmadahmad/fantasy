@@ -7,30 +7,16 @@ if (!defined('BASEPATH'))
  * and open the template in the editor.
  */
 
-class Pages_model extends CI_Model 
+class Generic_model extends CI_Model 
 {
   function __construct() 
   {
     parent::__construct();
   }
 
-  function get_pages()
+  function get_all($table_name)
   {
-  	$query = $this->db->get('pages');
-  	if ($query->num_rows() > 0)
-  	{
-      return $query->result();
-    }
-    else
-    {
-      return FALSE;
-    }
-  }
-
-  function get_page_by_id($id)
-  {
-    $this->db->where('page_id', $id);
-    $query = $this->db->get('pages');
+    $query = $this->db->get($table_name);
     if ($query->num_rows() > 0)
     {
       return $query->result();
@@ -41,13 +27,27 @@ class Pages_model extends CI_Model
     }
   }
 
-  function get_content($page_name)
+  function get_all_by_key($table_name, $key, $value)
   {
-  	$this->db->select('page_content');
-  	$this->db->where('page_name', $page_name);
-  	$query = $this->db->get('pages');
-  	if ($query->num_rows() > 0)
-  	{
+    $this->db->where($key, $value);
+    $query = $this->db->get($table_name);
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+  } 
+
+  function get_some_by_key($table_name, $key, $value, $columns)
+  {
+    $this->db->select($columns);
+    $this->db->where($key, $value);
+    $query = $this->db->get($table_name);
+    if ($query->num_rows() > 0)
+    {
       return $query->result();
     }
     else
