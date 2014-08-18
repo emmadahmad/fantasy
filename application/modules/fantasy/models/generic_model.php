@@ -41,7 +41,7 @@ class Generic_model extends CI_Model
     }
   } 
 
-  function get_some_by_key($table_name, $key, $value, $columns)
+  function get_some_by_key($table_name, $columns, $key, $value)
   {
     $this->db->select($columns);
     $this->db->where($key, $value);
@@ -51,6 +51,47 @@ class Generic_model extends CI_Model
       return $query->result();
     }
     else
+    {
+      return FALSE;
+    }
+  }
+
+  function insert_into($table_name, $data)
+  {
+    $result = $this->db->insert($table_name, $data);
+    if($result)
+    {
+      return $this->db->insert_id();
+    }
+    else 
+    {
+      return FALSE;
+    }
+  }
+
+  function delete_by_key($table_name, $key, $value)
+  {
+    $this->db->where($key, $value);
+    $result = $this->db->delete($table_name);
+    if($result)
+    {
+      return TRUE;
+    }
+    else 
+    {
+      return FALSE;
+    }
+  }
+
+  function update_by_key($table_name, $key, $value, $data)
+  {
+    $this->db->where($key, $value);
+    $result = $this->db->update($table_name, $data);
+    if($result)
+    {
+      return TRUE;
+    }
+    else 
     {
       return FALSE;
     }

@@ -1,4 +1,9 @@
-<h2 class="page-header">Pages <small><a href="../admin/add_page"><span class="glyphicon glyphicon-plus-sign"></span> Add New Page</a></small></h2>
+<?php if(isset($alert)): ?>
+	<div class="alert alert-<?php echo $alert_type; ?>">
+		<?php echo $alert_message; ?>
+	</div>
+<?php endif; ?>
+<h2 class="page-header">Pages <small><a href="<?php echo base_url(); ?>admin/pages/add_page"><span class="glyphicon glyphicon-plus-sign"></span> Add New Page</a></small></h2>
 <div class="inner_content">
 	<div class="table-responsive">
 		<table class="table table-hover">
@@ -11,14 +16,14 @@
 					<th>Delete</th>
 				</tr>
 			</thead>
-			<?php foreach($content as $cont): ?>
+			<?php foreach($pages as $cont): ?>
 			<tbody>
 				<tr>
 					<td><?php echo $cont->page_id; ?></td>
 					<td><?php echo $cont->page_name; ?></td>
 					<td><?php echo $cont->display_name; ?></td>
-					<td><span class="glyphicon glyphicon-pencil"></span></td>
-					<td><span class="glyphicon glyphicon-trash"></span></td>
+					<td><a href="<?php echo base_url(); ?>admin/pages/edit_page/<?php echo $cont->page_name; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
+					<td><a href="<?php echo base_url(); ?>admin/deletePage/<?php echo $cont->page_name; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
 				</tr>
 			</tbody>			
 			<?php endforeach; ?>

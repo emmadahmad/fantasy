@@ -9,7 +9,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../admin">Fantasy Cricket</a>
+      <a class="navbar-brand" href="<?php echo base_url(); ?>admin">Fantasy Cricket</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">

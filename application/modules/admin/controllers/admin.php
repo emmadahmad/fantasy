@@ -36,38 +36,159 @@ class Admin extends CI_Controller
 		build('dashboard.php', $data);
 	}
 
-	public function pages()
+	public function pages($action=null,$page_name=null)
 	{
-		$content = $this->general->get_all('pages');
-		$data['content'] = $content;
-		$this->template->title('Admin', 'Manage Pages');
-
-		$this->template->set_layout('header_footer', 'backend')->
-		build('pages/pages.php', $data);
+		$pages = $this->general->get_all('pages');
+		$data['pages'] = $pages;
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+		
+		if($page_name != null)
+		{
+			$page = $this->general->get_all_by_key('pages','page_name',$page_name);
+			$data_edit['page'] = $page[0];
+		}
+		
+		if($action == null)
+		{			
+			$this->template->title('Admin', 'Manage Pages');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('pages/pages.php', $data);
+		}
+		else if($action == 'add_page')
+		{
+			$this->template->title('Admin', 'Add New Page');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('pages/add_page.php', $data);
+		}
+		else if($action == 'edit_page')
+		{
+			$this->template->title('Admin', 'Update Page');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('pages/edit_page.php', $data_edit);
+		}
+			
 	}
 
-	public function add_page()
+	public function addPage()
 	{
-		$content = $this->pages->get_pages();
-		//$content = $content[0]->page_content;
-		//print_array($content);
-		$data['content'] = $content;
-		$this->template->title('Admin', 'Add New Page');
-
-		$this->template->set_layout('header_footer', 'backend')->
-		build('pages/add_page.php', $data);
+		if(!empty($_POST))
+		{
+			if($this->general->get_all_by_key('pages', 'page_name', post('page_slug')))
+			{
+				$alert_data = array(
+            		'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "The page already exists. Please try again with a new name."
+				);
+			}
+			else
+			{
+				$db_data = array(
+		            'page_name' => post('page_slug'),
+		            'display_name' => post('page_name'),
+		            'page_content' => post('page_content')
+		        );
+		        $new_res = $this->general->insert_into('pages',$db_data);
+		        $alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "The page has been added successfully."
+				);
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/pages");
 	}
 
-	public function edit_page()
+	public function deletePage($page_name)
 	{
-		$content = $this->pages->get_pages();
-		//$content = $content[0]->page_content;
-		//print_array($content);
-		$data['content'] = $content;
-		$this->template->title('Admin', 'Update Page');
+		if($this->general->delete_by_key('pages','page_name',$page_name))
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "success",
+				'alert_message' => "The page has been successfully deleted."
+			);
+		}
+		else 
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "We encoutered a problem deleting the page. Please try again."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/pages");
+	}
 
-		$this->template->set_layout('header_footer', 'backend')->
-		build('pages/edit_page.php', $data);
+	public function updatePage($page_name)
+	{
+		if(!empty($_POST))
+		{
+			if($this->pages->get_page_by_name_not_id(post('page_id'),post('page_slug')))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "The page already exists. Please try again with a new name."
+				);
+			}
+			else
+			{
+				$db_data = array(
+		            'page_name' => post('page_slug'),
+		            'display_name' => post('page_name'),
+		            'page_content' => post('page_content')
+		        );
+		        $new_res = $this->general->update_by_key('pages','page_name',$page_name,$db_data);
+		        if($new_res)
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "success",
+						'alert_message' => "The page has been successfully updated."
+					);
+		        }
+		        else
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "warning",
+						'alert_message' => "We encoutered a problem updating the page. Please try again."
+					);
+		        }
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty. Please try again."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/pages");
 	}
 
 	public function teams()

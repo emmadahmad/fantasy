@@ -9,6 +9,7 @@ class Fantasy extends CI_Controller
         $logged_in = 0;
 
         $this->load->model ( 'fantasy/pages_model', 'pages' );
+        $this->load->model ( 'fantasy/generic_model', 'general' );
 
         $this->template->set_partial('head', 'frontend/partials/head');
         $this->template->set_partial('footer', 'frontend/partials/footer');
@@ -34,8 +35,8 @@ class Fantasy extends CI_Controller
 
 	public function prizes()
 	{
-		$content = $this->pages->get_content('prizes');
-		$content = $content[0]->page_content;
+		$page = $this->general->get_all_by_key('pages','page_name','prizes');
+		$content = $page[0]->page_content;
 		$data['content'] = $content;
 		$this->template->title('Fantasy Cricket', 'Prizes');
 
