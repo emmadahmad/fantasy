@@ -96,5 +96,20 @@ class Generic_model extends CI_Model
       return FALSE;
     }
   }
+
+  function if_exists($table, $key1, $val1, $key2, $val2)
+  {
+    $this->db->where($key1.' !=', $val1);
+    $this->db->where($key2, $val2);
+    $query = $this->db->get($table);
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
 }
 ?>

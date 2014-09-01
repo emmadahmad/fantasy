@@ -8,8 +8,8 @@ class Fantasy extends CI_Controller
         parent::__construct();
         $logged_in = 0;
 
-        $this->load->model ( 'fantasy/pages_model', 'pages' );
-        $this->load->model ( 'fantasy/generic_model', 'general' );
+        $this->load->model ( 'generic/pages_model', 'pages' );
+        $this->load->model ( 'generic/generic_model', 'general' );
 
         $this->template->set_partial('head', 'frontend/partials/head');
         $this->template->set_partial('footer', 'frontend/partials/footer');
