@@ -24,7 +24,7 @@
 						<td><?php echo $cont->country_id; ?></td>
 						<td><?php echo $cont->country_name; ?></td>
 						<td><a href="<?php echo base_url(); ?>admin/countries/edit_country/<?php echo $cont->country_id; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
-						<td><a href="<?php echo base_url(); ?>admin/deleteCountry/<?php echo $cont->country_id; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
+						<td><a href="<?php echo base_url(); ?>admin/countries/delete_country/<?php echo $cont->country_id; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
 					</tr>
 				</tbody>			
 				<?php endforeach; ?>

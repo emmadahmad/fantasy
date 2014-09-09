@@ -1,6 +1,6 @@
 <h2 class="page-header">Update Page</h2>
 <div class="inner_content">
-	<form role="form" id="frm_edit_page" class="validate_form" action="<?php echo base_url(); ?>admin/updatePage/<?php echo $page->page_name; ?>" method="post">
+	<form role="form" id="frm_edit_page" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/updatePage/<?php echo $page->page_name; ?>" method="post">
 		<div class="form-group">
 			<label for="exampleInputEmail1">Page Slug</label>
 			<input type="text" class="form-control validate[required]" id="page_slug" name="page_slug" placeholder="Page Slug" data-prompt-position="topLeft" value="<?php echo $page->page_name; ?>">

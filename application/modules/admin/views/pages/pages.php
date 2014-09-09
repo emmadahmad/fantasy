@@ -24,7 +24,7 @@
 						<td><?php echo $cont->page_name; ?></td>
 						<td><?php echo $cont->display_name; ?></td>
 						<td><a href="<?php echo base_url(); ?>admin/pages/edit_page/<?php echo $cont->page_name; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
-						<td><a href="<?php echo base_url(); ?>admin/deletePage/<?php echo $cont->page_name; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
+						<td><a href="<?php echo base_url(); ?>admin/pages/delete_page/<?php echo $cont->page_name; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
 					</tr>
 				</tbody>			
 				<?php endforeach; ?>

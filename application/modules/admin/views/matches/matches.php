@@ -30,7 +30,7 @@
 					<td><?php echo $cont->country_name; ?></td>
 					<td><?php echo $cont->type_name; ?></td>
 					<td><a href="<?php echo base_url(); ?>admin/players/edit_player/<?php echo $cont->player_id; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
-					<td><a href="<?php echo base_url(); ?>admin/players/delete_player/<?php echo $cont->player_id; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
+					<td><a href="<?php echo base_url(); ?>admin/deletePlayer/<?php echo $cont->player_id; ?>"><span class="glyphicon glyphicon-trash"></span></a></td>
 				</tr>							
 				<?php endforeach; ?>
 			<?php else: ?>
