@@ -7,10 +7,10 @@ class Ajax extends CI_Controller
 	{
         parent::__construct();
 
-        $this->load->model ( 'generic/pages_model', 'pages' );
-        $this->load->model ( 'generic/countries_model', 'countries' );
-        $this->load->model ( 'generic/players_model', 'players' );
-        $this->load->model ( 'generic/generic_model', 'general' );
+        $this->load->model ( 'pages_model', 'pages' );
+        $this->load->model ( 'countries_model', 'countries' );
+        $this->load->model ( 'players_model', 'players' );
+        $this->load->model ( 'generic_model', 'general' );
     }
 
 	public function index()
