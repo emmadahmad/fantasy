@@ -15,6 +15,16 @@ function select_countries($countries)
   return $array;
 }
 
+function select_venues($venues)
+{
+  $array = array();
+  foreach($venues as $cont)
+  {
+    $array[$cont['venue_id']] = $cont['venue_name'];
+  }
+  return $array;
+}
+
 function select_player_type($player_type)
 {
   $array = array();

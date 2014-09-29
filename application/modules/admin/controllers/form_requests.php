@@ -426,4 +426,193 @@ class Form_requests extends CI_Controller
 		$this->session->set_userdata($alert_data);
 		redirect(base_url()."admin/pages");
 	}
+
+	/*
+	*
+	VENUES
+	*
+	*/
+
+		public function addVenue()
+	{
+		if(!empty($_POST))
+		{
+			if($this->general->get_all_by_key('venues', 'venue_name', post('venue_name')))
+			{
+				$alert_data = array(
+            		'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "Venue name already exists. Please try again."
+				);
+			}
+			else
+			{
+				$db_data = array(
+		            'venue_name' => post('venue_name'),
+		            'venue_city' => post('venue_city'),
+		            'venue_capacity' => post('venue_capacity'),
+		            'venue_description' => post('venue_description'),
+		            'venue_photo' => post('venue_photo'),
+		        );
+		        $new_res = $this->general->insert_into('venues',$db_data);
+		        $alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Your venue has been added successfully."
+				);
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/venues");
+	}
+
+	public function updateVenue($venue_id)
+	{
+		if(!empty($_POST))
+		{
+			if($this->general->if_exists('venues', 'venue_id', post('venue_id'), 'venue_name', post('venue_name')))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "The page already exists. Please try again with a new name."
+				);
+			}
+			else
+			{
+				$db_data = array(
+		            'venue_name' => post('venue_name'),
+		            'venue_city' => post('venue_city'),
+		            'venue_capacity' => post('venue_capacity'),
+		            'venue_description' => post('venue_description'),
+		            'venue_photo' => post('venue_photo'),
+		        );
+		        $new_res = $this->general->update_by_key('venues','venue_id',$venue_id,$db_data);
+		        if($new_res)
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "success",
+						'alert_message' => "The venue has been successfully updated."
+					);
+		        }
+		        else
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "warning",
+						'alert_message' => "We encoutered a problem updating the venue. Please try again."
+					);
+		        }
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty. Please try again."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/venues");
+	}
+
+	/*
+	*
+	MATCHES
+	*
+	*/
+
+	public function addMatch()
+	{
+		if(!empty($_POST))
+		{		
+			$match_date = post('match_date');
+			$match_date = format_date($match_date, DB_DATE);
+			$match_time = post('match_time');
+			$match_time = format_date($match_time, DB_TIME);
+			$date = $match_date . " " . $match_time;
+			$db_data = array(
+	            'home_team' => post('home_team'),
+	            'away_team' => post('away_team'),
+	            'match_venue' => post('match_venue'),
+	            'match_date' => $date
+	        );
+	        $match_id = $this->general->insert_into('matches',$db_data);
+	        $db_match_data = array(
+	            'match_id' => $match_id
+	        );
+	        $new_res = $this->general->insert_into('match_info',$db_match_data);
+	        $alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "success",
+				'alert_message' => "Your match has been added successfully."
+			);			
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/matches");
+	}
+
+	public function updateMatch()
+	{
+		if(!empty($_POST))
+		{
+			$match_id = post('match_id');
+			$match_date = post('match_date');
+			$match_date = format_date($match_date, DB_DATE);
+			$match_time = post('match_time');
+			$match_time = format_date($match_time, DB_TIME);
+			$date = $match_date . " " . $match_time;
+			$db_data = array(
+	            'home_team' => post('home_team'),
+	            'away_team' => post('away_team'),
+	            'match_venue' => post('match_venue'),
+	            'match_date' => $date
+	        );
+	        $new_res = $this->general->update_by_key('matches','match_id',$match_id,$db_data);
+	        if($new_res)
+	        {
+	        	$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "The match has been successfully updated."
+				);
+	        }
+	        else
+	        {
+	        	$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "We encoutered a problem updating the match. Please try again."
+				);
+	        }			
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty. Please try again."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/matches");
+	}
 }

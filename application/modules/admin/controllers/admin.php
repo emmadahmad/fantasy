@@ -10,6 +10,7 @@ class Admin extends CI_Controller
 
         $this->load->model ( 'pages_model', 'pages' );
         $this->load->model ( 'countries_model', 'countries' );
+        $this->load->model ( 'matches_model', 'matches' );
         $this->load->model ( 'players_model', 'players' );
         $this->load->model ( 'generic_model', 'general' );
 
@@ -286,11 +287,174 @@ class Admin extends CI_Controller
 
 	/*
 	*
+	* VENUES
+	*
+	*/
+
+	public function venues($action=null,$venue_id=null)
+	{
+		$venues = $this->general->get_all('venues');
+		$data['venues'] = $venues;
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+		
+		if($venue_id != null)
+		{
+			$venue = $this->general->get_all_by_key('venues','venue_id',$venue_id);
+			$data_edit['venue'] = $venue[0];
+		}
+		
+		if($action == null)
+		{			
+			$this->template->title('Admin', 'Manage Countries');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('venues/venues.php', $data);
+		}
+		else if($action == 'add_venue')
+		{
+			$this->template->title('Admin', 'Add New Country');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('venues/add_venue.php', $data);
+		}
+		else if($action == 'edit_venue')
+		{
+			$this->template->title('Admin', 'Update Country');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('venues/edit_venue.php', $data_edit);
+		}
+		else if($action == 'delete_venue')
+		{
+			if($this->general->delete_by_key('venues','venue_id',$venue_id))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Your venue has been successfully deleted."
+				);
+			}
+			else 
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "We encoutered a problem deleting the venue. Please try again."
+				);
+			}
+			$this->session->set_userdata($alert_data);
+			redirect(base_url()."admin/venues");
+		}			
+	}
+
+	/*
+	*
 	* MATCHES
 	*
 	*/
 
-
+	public function matches($action=null,$match_id=null)
+	{
+		$matches = $this->matches->get_all_matches();
+		$countries = $this->general->get_all('countries');
+		$venues = $this->general->get_all('venues');
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+		
+		if($match_id != null)
+		{
+			$match = $this->general->get_all_by_key('matches','match_id',$match_id);
+		}
+		
+		if($action == null)
+		{
+			$data['matches'] = $matches;
+			$data['countries'] = $countries;
+			$this->template->title('Admin', 'Manage Matches');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('matches/matches.php', $data);
+		}
+		else if($action == 'view_match')
+		{
+			$match = $this->matches->get_by_id($match_id);
+			$data['match'] = $match[0];
+			$match_info = $this->general->get_all_by_key('match_info', 'match_id', $match_id);
+			$data['match_info'] = $match_info[0];
+			$venue = $this->general->get_all_by_key('venues', 'venue_id', $data['match']->match_venue);
+			$data['venue'] = $venue[0];
+			if($data['match_info']->completed)
+			{
+				$winning_team = $this->general->get_some_by_key('countries', 'country_name', 'country_id', $data['match_info']->winner);
+				$losing_team = ($data['match_info']->winner != $data['match']->home_team) ? $data['match']->home : $data['match']->away;
+  				$data['winning_team'] = $winning_team[0]->country_name;
+  				$data['losing_team'] = $losing_team;
+				$result = get_match_result($match_info[0]);
+				$toss_result = get_toss_result($match_info[0]);
+				$data['result'] = $result;
+				$data['toss_result'] = $toss_result;
+			}
+			
+			$this->template->title('Admin', 'View Match Details');
+			$this->template->set_layout('header_footer', 'backend')->
+				build('matches/view_match.php', $data);
+		}
+		else if($action == 'add_match')
+		{
+			$data['countries'] = select_countries(object_to_array($countries));
+			$data['venues'] = select_venues(object_to_array($venues));
+			$this->template->title('Admin', 'Add New Match');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('matches/add_match.php', $data);
+		}
+		else if($action == 'edit_match')
+		{
+			$data['match'] = $match[0];
+			$data['countries'] = select_countries(object_to_array($countries));
+			$data['venues'] = select_venues(object_to_array($venues));
+			$this->template->title('Admin', 'Update Match');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('matches/edit_match.php', $data);
+		}
+		else if($action == 'delete_match')
+		{
+			if($this->general->delete_by_key('matches','match_id',$match_id))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Your match has been successfully deleted."
+				);
+			}
+			else 
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "We encoutered a problem deleting the match. Please try again."
+				);
+			}
+			$this->session->set_userdata($alert_data);
+			redirect(base_url()."admin/matches");
+		}			
+	}
 
 
 

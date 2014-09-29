@@ -232,3 +232,91 @@ function time_elapsed_string($ptime)
         }
     }
 }
+
+function format_date($date_string , $format = DEFAULT_DATE)
+{
+  if($date_string == null || $date_string == '0000-00-00 00:00:00')
+  {
+    $date_res = 'N/A';
+  }
+  else
+  {
+    $date = strtotime($date_string);
+
+    if($format == DB_FULL_DATE)
+    {
+      $date_res = date(DB_FULL_DATE, $date);
+    }
+    else if($format == DB_DATE)
+    {
+      $date_res = date(DB_DATE, $date);
+    }
+    else if($format == DB_TIME)
+    {
+      $date_res = date(DB_TIME, $date);
+    }
+    else if($format == DEFAULT_DATE)
+    {
+      $date_res = date(DEFAULT_DATE, $date);
+    }
+    else if($format == SHORT_DATE)
+    {
+      $date_res = date(SHORT_DATE, $date);
+    }
+    else if($format == LONG_DATE)
+    {
+      $date_res = date(LONG_DATE, $date);
+    }
+    else if($format == TIME)
+    {
+      $date_res = date(TIME, $date);
+    }
+    else
+    {
+      $date_res = date($format, $date);
+    }
+  }
+  return $date_res;
+}
+
+function get_match_result($match_info)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $batting_first = $match_info->batting_first;
+  $winner = $match_info->winner;
+  $runs = $match_info->winner_runs - $match_info->loser_runs;
+  $wickets = 10 - $match_info->winner_wickets;
+  $team_name = $CI->general->get_some_by_key('countries', 'country_name', 'country_id', $match_info->winner);
+  $team_name = $team_name[0]->country_name;
+  if($winner == $batting_first)
+  {
+    $string = $team_name . " won the match by " . $runs . " runs";
+  }
+  else
+  {
+    $string = $team_name . " won the match by " . $wickets . " wickets";
+  }
+  return $string;
+}
+
+function get_toss_result($match_info)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $batting_first = $match_info->batting_first;
+  $toss_won = $match_info->toss_won;
+  $runs = $match_info->winner_runs - $match_info->loser_runs;
+  $wickets = 10 - $match_info->winner_wickets;
+  $team_name = $CI->general->get_some_by_key('countries', 'country_name', 'country_id', $match_info->toss_won);
+  $team_name = $team_name[0]->country_name;
+  if($toss_won == $batting_first)
+  {
+    $string = $team_name . " won the toss and chose to bat.";
+  }
+  else
+  {
+    $string = $team_name . " won the toss and chose to field.";
+  }
+  return $string;
+}

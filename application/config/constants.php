@@ -80,3 +80,17 @@ define('FROM_EMAIL','emmad.ahmad@gmail.com');
 define('FROM_EMAIL_TITLE','Fantasy App');
 define('ACCOUNT_TITLE','My Account');
 
+/*
+ * Define Date Formats
+ */
+
+define('DB_FULL_DATE','Y-m-d H:i:s');
+define('DB_DATE','Y-m-d');
+define('DATE_PLUGIN','m/d/Y');
+define('DB_TIME','H:i:s');
+define('TIME_PLUGIN','h:i A');
+define('DEFAULT_DATE','d M Y');
+define('SHORT_DATE','');
+define('LONG_DATE','');
+define('TIME','h:i a');
+

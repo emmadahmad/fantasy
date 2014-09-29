@@ -5,7 +5,7 @@
 <?php endif; ?>
 <h2 class="page-header">Players <small><a href="<?php echo base_url(); ?>admin/players/add_player"><span class="glyphicon glyphicon-plus-sign"></span> Add New Player</a></small></h2>
 <div class="inner_content">
-	<select id="select_country" name="select_country" class="form-control">
+	<select id="select_country_players" name="select_country" class="form-control">
 		<option value="0">All Countries</option>
 		<?php foreach($countries as $cont): ?>
 		<option value="<?php echo $cont->country_id ?>"><?php echo $cont->country_name ?></option>

@@ -1,29 +1,50 @@
-<h2 class="page-header">Add Player</h2>
+<h2 class="page-header">Add Match</h2>
 <div class="inner_content">
-	<form role="form" id="frm_add_player_info" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addPlayerInfo" method="post">
+	<form role="form" id="frm_add_match" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addMatch" method="post">
+		<div class="row">			
+			<div class="col-md-4">
+				<label for="home_team">Home Team</label>
+				<?php echo form_dropdown('home_team', $countries, 0, 'id="home_team" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+			</div>
+			<div class="col-md-4">
+				<label for="away_team">Away Team</label>
+				<?php echo form_dropdown('away_team', $countries, 0, 'id="away_team" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+			</div>
+			<div class="col-md-4">
+				<label for="match_venue">Venue</label>
+				<?php echo form_dropdown('match_venue', $venues, 0, 'id="match_venue" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+			</div>
+		</div>
+		<br>
 		<div class="row">
-			<div class="col-md-3">
-				<label for="player_name">Player Name</label>
-				<input type="text" class="form-control validate[required]" id="player_name" name="player_name" placeholder="Player Name" data-prompt-position="topLeft">
+			<div class="col-md-2">
+				<div class="form-group">
+					<label for="venue">Date</label>
+	                <div class='input-group date date_only' id='match_date'>
+	                    <input name="match_date" type='text' class="form-control validate[required]" placeholder="Date"/>
+	                    <span class="input-group-addon">
+	                    	<span class="glyphicon glyphicon-calendar"></span>
+	                    </span>
+	                </div>
+	            </div>
 			</div>
-			<div class="col-md-3">
-				<label for="player_name">Matches</label>
-				<input type="text" class="form-control validate[required]" id="matches" name="matches" placeholder="Matches" data-prompt-position="topLeft">
-			</div>
-			<div class="col-md-3">
-				<label for="country">Country</label>
-				<?php echo form_dropdown('country', $countries, 0, 'id="countries" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
-			</div>
-			<div class="col-md-3">
-				<label for="player_type">Player Type</label>
-				<?php echo form_dropdown('player_type', $player_types, 0, 'id="player_type" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label for="venue">Time</label>
+	                <div class='input-group date time_only' id='match_time'>
+	                    <input name="match_time" type='text' class="form-control validate[required]" placeholder="Time"/>
+	                    <span class="input-group-addon">
+	                    	<span class="glyphicon glyphicon-time"></span>
+	                    </span>
+	                </div>
+	            </div>
 			</div>
 		</div>
 		<br>
 		<div class="row">
 			<div class="col-md-12">
 				<button type="submit" class="btn btn-primary">Save</button>
-				<a href="<?php echo base_url(); ?>admin/players/" class="btn btn-default" role="button">Back</a>
+				<a href="<?php echo base_url(); ?>admin/matches/" class="btn btn-default" role="button">Back</a>
 			</div>
 		</div>								
 	</form>

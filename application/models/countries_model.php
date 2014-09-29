@@ -16,7 +16,7 @@ class Countries_model extends CI_Model
 
   function get_countries()
   {
-  	$query = $this->db->get('pages');
+  	$query = $this->db->get('countries');
   	if ($query->num_rows() > 0)
   	{
       return $query->result();

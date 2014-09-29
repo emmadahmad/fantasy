@@ -1,23 +1,39 @@
 $(document).ready(function()
 {
-  $(".validate_form").validationEngine('attach', {
+	$(".validate_form").validationEngine('attach', {
 		promptPosition : "topLeft", 
 		binded: false
 	});
 
-  $('#page_spinner').modal({
-  		backdrop : 'static',
+	$('#page_spinner').modal({
+		backdrop : 'static',
 	  	keyboard : false,
 	  	show : false
 	});
 
-	$('#select_country').on('change', function()
+	$('.date_only').datetimepicker({
+		pickTime: false
+
+	});
+
+	$('.time_only').datetimepicker({
+		pickDate: false
+
+	});
+
+	/*
+	*
+	* AJAX CALLS
+	*
+	*/
+
+	$('#select_country_players').on('change', function()
 	{
 		$('#page_spinner').modal('show');
 		$.ajax({
 		    type: "POST",
 		    //dataType: "json",
-		    url: '/admin/ajax/selectCountry',
+		    url: '/admin/ajax/selectCountryPlayers',
 		    data: {country_id : $(this).val()},
 		    async: false,
 		   
@@ -26,6 +42,30 @@ $(document).ready(function()
 		    	$('#page_spinner').modal('hide');
 		    	//console.log(data);
 		    	$("#player_table_body").html(data);
+		    },
+
+		    error: function(data, textStatus, errorThrown)
+		    {
+		    	console.log(textStatus);
+		    }
+		});
+	});
+
+	$('#select_country_matches').on('change', function()
+	{
+		$('#page_spinner').modal('show');
+		$.ajax({
+		    type: "POST",
+		    //dataType: "json",
+		    url: '/admin/ajax/selectCountryMatches',
+		    data: {country_id : $(this).val()},
+		    async: false,
+		   
+		    success: function (data, textStatus) 
+		    {
+		    	$('#page_spinner').modal('hide');
+		    	//console.log(data);
+		    	$("#match_table_body").html(data);
 		    },
 
 		    error: function(data, textStatus, errorThrown)

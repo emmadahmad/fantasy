@@ -1,211 +1,302 @@
-<h2 class="page-header"><?php echo $player_info->player_name; ?></h2>
+<h2 class="page-header"><?php echo $match->home; ?> VS <?php echo $match->away; ?></h2>
 <div class="inner_content">
 	<div class="row">
 		<div class="col-md-4">
 			<dl class="dl-horizontal">
-				<dt>Player Name</dt>
-				<dd><?php echo $player_info->player_name; ?></dd>
+				<dt>Home Team</dt>
+				<dd><?php echo $match->home; ?></dd>
 
-				<dt>Country</dt>
-				<dd><?php echo $player_info->country_name; ?></dd>
+				<dt>Away Team</dt>
+				<dd><?php echo $match->away; ?></dd>
 
-				<dt>Player Type</dt>
-				<dd><?php echo $player_info->type_name; ?></dd>
+				<dt>Date</dt>
+				<dd><?php echo format_date($match->match_date); ?></dd>
 
-				<dt>Matches</dt>
-				<dd><?php echo $player_stats->matches; ?></dd>
+				<dt>Time</dt>
+				<dd><?php echo format_date($match->match_date,TIME); ?></dd>
 			</dl>
 		</div>
 		<div class="col-md-4">
 			<dl class="dl-horizontal">
-				<dt>League Matches</dt>
-				<dd><?php echo $player_info->league_matches; ?></dd>
+				<dt>Venue</dt>
+				<dd><?php echo $venue->venue_name; ?></dd>
 
-				<dt>League Points</dt>
-				<dd><?php echo $player_info->league_points; ?></dd>
+				<dt>City</dt>
+				<dd><?php echo $venue->venue_city; ?></dd>
 
-				<dt>League Price</dt>
-				<dd><?php echo $player_info->league_price; ?></dd>
+				<dt>Capacity</dt>
+				<dd><?php echo $venue->venue_capacity; ?></dd>
 			</dl>
 		</div>
 		<div class="col-md-4">
 			<p>Place for Picture thumbnail</p>
 		</div>
 	</div>
-	<div class="panel-group" id="player_accordian">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#player_accordian" href="#batting_details">
-						Batting Stats
-					</a>
-				</h4>
+	<br>
+	<?php if($match_info->completed): ?>
+		<?php
+			$bat_first = ($match_info->batting_first == $match_info->winner) ? 'w' : 'l';
+			if($bat_first == 'w')
+			{
+				$string1 = $winning_team . ' ' . $match_info->winner_runs . '/' . $match_info->winner_wickets;
+				$string2 = $losing_team . ' ' . $match_info->loser_runs . '/' . $match_info->loser_wickets;
+			}
+			else
+			{
+				$string1 = $losing_team . ' ' . $match_info->loser_runs . '/' . $match_info->loser_wickets;
+				$string2 = $winning_team . ' ' . $match_info->winner_runs . '/' . $match_info->winner_wickets;
+			}
+		?>
+		<div class="row">
+			<div class="col-md-6">
+				<dl class="dl-horizontal">
+					<dt>Result</dt>
+					<dd><?php echo $toss_result; ?></dd>
+					<dd><?php echo $result; ?></dd>
+				</dl>
 			</div>
-			<div id="batting_details" class="panel-collapse collapse in">
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-md-6">
-							<h3>Overall Stats</h3>
-							<div class="table-responsive">
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th>Mat</th>				
-											<th>Inns</th>
-											<th>NO</th>									
-											<th>BF</th>
-											<th>Runs</th>
-											<th>Ave</th>
-											<th>SR</th>
-										</tr>
-									</thead>
-									<tbody id="player_table_body">
-									<?php if(!empty($batting_stats)): ?>			
-									<tr>
-										<td><?php echo $player_stats->matches; ?></td>
-										<td><?php echo $batting_stats->innings; ?></td>
-										<td><?php echo $batting_stats->not_outs; ?></td>
-										<td><?php echo $batting_stats->balls_faced; ?></td>
-										<td><?php echo $batting_stats->runs; ?></td>
-										<td><?php echo $player_stats->batting_avg; ?></td>
-										<td><?php echo $player_stats->batting_sr; ?></td>
-									</tr>							
-									<?php else: ?>
-										<tr>
-											<td colspan="7" class="text-center">No Data Available</td>
-										</tr>
-									<?php endif; ?>
-									</tbody>
-								</table>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<h3>League Stats</h3>
-							<div class="table-responsive">
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th>Mat</th>				
-											<th>Inns</th>
-											<th>NO</th>									
-											<th>BF</th>
-											<th>Runs</th>
-											<th>Ave</th>
-											<th>SR</th>
-										</tr>
-									</thead>
-									<tbody id="player_table_body">
-									<?php if(!empty($batting_stats)): ?>			
-									<tr>
-										<td><?php echo $player_stats->matches; ?></td>
-										<td><?php echo $batting_stats->innings; ?></td>
-										<td><?php echo $batting_stats->not_outs; ?></td>
-										<td><?php echo $batting_stats->balls_faced; ?></td>
-										<td><?php echo $batting_stats->runs; ?></td>
-										<td><?php echo $player_stats->batting_avg; ?></td>
-										<td><?php echo $player_stats->batting_sr; ?></td>
-									</tr>							
-									<?php else: ?>
-										<tr>
-											<td colspan="7" class="text-center">No Data Available</td>
-										</tr>
-									<?php endif; ?>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>							
-				</div>
+			<div class="col-md-6">
+				<dl class="dl-horizontal">
+					<dt>Score</dt>
+					<dd><?php echo $string1; ?></dd>
+					<dd><?php echo $string2; ?></dd>
+				</dl>
 			</div>
 		</div>
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#player_accordian" href="#bowling_details">
-						Bowling Stats
-					</a>
-				</h4>
-			</div>
-			<div id="bowling_details" class="panel-collapse collapse">
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-md-6">
-							<h3>Overall Stats</h3>
-							<div class="table-responsive">
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th>Mat</th>				
-											<th>Inns</th>
-											<th>Balls</th>									
-											<th>Runs</th>
-											<th>Wkts</th>
-											<th>Ave</th>
-											<th>SR</th>
-											<th>Econ</th>
-										</tr>
-									</thead>
-									<tbody id="player_table_body">
-									<?php if(!empty($bowling_stats)): ?>				
-									<tr>
-										<td><?php echo $player_stats->matches; ?></td>
-										<td><?php echo $bowling_stats->innings; ?></td>
-										<td><?php echo $bowling_stats->balls; ?></td>
-										<td><?php echo $bowling_stats->runs; ?></td>
-										<td><?php echo $bowling_stats->wickets; ?></td>
-										<td><?php echo $player_stats->bowling_avg; ?></td>
-										<td><?php echo $player_stats->bowling_sr; ?></td>
-										<td><?php echo $player_stats->bowling_econ; ?></td>
-									</tr>							
-									<?php else: ?>
-										<tr>
-											<td colspan="8" class="text-center">No Data Available</td>
-										</tr>
-									<?php endif; ?>
-									</tbody>
-								</table>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<h3>League Stats</h3>
-							<div class="table-responsive">
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th>Mat</th>				
-											<th>Inns</th>
-											<th>Balls</th>									
-											<th>Runs</th>
-											<th>Wkts</th>
-											<th>Ave</th>
-											<th>SR</th>
-											<th>Econ</th>
-										</tr>
-									</thead>
-									<tbody id="player_table_body">
-									<?php if(!empty($bowling_stats)): ?>			
-									<tr>
-										<td><?php echo $player_stats->matches; ?></td>
-										<td><?php echo $bowling_stats->innings; ?></td>
-										<td><?php echo $bowling_stats->balls; ?></td>
-										<td><?php echo $bowling_stats->runs; ?></td>
-										<td><?php echo $bowling_stats->wickets; ?></td>
-										<td><?php echo $player_stats->bowling_avg; ?></td>
-										<td><?php echo $player_stats->bowling_sr; ?></td>
-										<td><?php echo $player_stats->bowling_econ; ?></td>
-									</tr>							
-									<?php else: ?>
-										<tr>
-											<td colspan="8" class="text-center">No Data Available</td>
-										</tr>
-									<?php endif; ?>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>							
-				</div>
+		<br>
+		<div class="row">
+			<div class="col-md-12">
+				<h3 class="text-center"><?php echo $string1; ?></h3>
 			</div>
 		</div>
-	</div>
+		<div class="row">
+			<div class="col-md-8">
+				<h4 class="text-center"><?php echo ($bat_first == 'w') ? $winning_team : $losing_team; ?> Batting</h4>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>									
+							<th>Runs</th>
+							<th>Balls</th>
+						</tr>
+					</thead>
+					<tbody id="player_table_body">
+					<?php if(1/*!empty($batting_stats)*/): ?>			
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>				
+					<?php else: ?>
+						<tr>
+							<td colspan="7" class="text-center">No Data Available</td>
+						</tr>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-4">
+				<h4 class="text-center"><?php echo ($bat_first == 'w') ? $losing_team : $winning_team; ?> Bowling</h4>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>				
+							<th>Overs</th>
+							<th>Runs</th>									
+							<th>Wickets</th>
+						</tr>
+					</thead>
+					<tbody id="player_table_body">
+					<?php if(1/*!empty($batting_stats)*/): ?>			
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>					
+					<?php else: ?>
+						<tr>
+							<td colspan="7" class="text-center">No Data Available</td>
+						</tr>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<br>
+		<div class="row">
+			<div class="col-md-12">
+				<h3 class="text-center"><?php echo $string2; ?></h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8">
+				<h4 class="text-center"><?php echo ($bat_first == 'w') ? $losing_team : $winning_team; ?> Batting</h4>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>									
+							<th>Runs</th>
+							<th>Balls</th>
+						</tr>
+					</thead>
+					<tbody id="player_table_body">
+					<?php if(1/*!empty($batting_stats)*/): ?>			
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>run out (Russel)</td>
+						<td><b>12</b></td>
+						<td>16</td>
+					</tr>				
+					<?php else: ?>
+						<tr>
+							<td colspan="7" class="text-center">No Data Available</td>
+						</tr>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-4">
+				<h4 class="text-center"><?php echo ($bat_first == 'w') ? $winning_team : $losing_team; ?> Bowling</h4>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>				
+							<th>Overs</th>
+							<th>Runs</th>									
+							<th>Wickets</th>
+						</tr>
+					</thead>
+					<tbody id="player_table_body">
+					<?php if(1/*!empty($batting_stats)*/): ?>			
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>
+					<tr>
+						<td>Nasir Jamshed</td>
+						<td>10</td>
+						<td>50</td>
+						<td>1</td>
+					</tr>					
+					<?php else: ?>
+						<tr>
+							<td colspan="7" class="text-center">No Data Available</td>
+						</tr>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php else: ?>
+		<div class="row">
+			<div class="col-md-12">
+				<dl class="dl-horizontal">
+					<dt>Result</dt>
+					<dd>TBD</dd>
+				</dl>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<h4>Match not played yet.</h4>
+			</div>
+		</div>
+	<?php endif; ?>
 </div>
