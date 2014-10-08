@@ -1,4 +1,4 @@
-<h2 class="page-header"><?php echo $match->home; ?> VS <?php echo $match->away; ?></h2>
+<h2 class="page-header"><?php echo $match->home; ?> VS <?php echo $match->away; ?> <small><a href="<?php echo base_url(); ?>admin/matches/add_match_details/<?php echo $match->match_id; ?>"><span class="glyphicon glyphicon-plus-sign"></span> Add Details</a></small></h2>
 <div class="inner_content">
 	<div class="row">
 		<div class="col-md-4">
@@ -76,46 +76,49 @@
 					<thead>
 						<tr>
 							<th></th>
+							<th></th>
 							<th></th>									
 							<th>Runs</th>
 							<th>Balls</th>
 						</tr>
 					</thead>
 					<tbody id="player_table_body">
-					<?php if(1/*!empty($batting_stats)*/): ?>			
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>run out (Russel)</td>
-						<td><b>12</b></td>
-						<td>16</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>run out (Russel)</td>
-						<td><b>12</b></td>
-						<td>16</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>run out (Russel)</td>
-						<td><b>12</b></td>
-						<td>16</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>run out (Russel)</td>
-						<td><b>12</b></td>
-						<td>16</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>run out (Russel)</td>
-						<td><b>12</b></td>
-						<td>16</td>
-					</tr>				
+					<?php if(!empty($winning_players_stats)): ?>
+						<?php foreach($winning_players_stats as $cont): ?>
+							<?php if($cont['batted']): ?>
+							<tr class="<?php echo $cont['dismissal_type'] == NOT_OUT ? 'success' : ''?>">
+								<td><?php echo $winning_team_players[$cont['player_id']]; ?></td>
+								<?php if($cont['dismissal_type'] == NOT_OUT): ?>
+									<td colspan="2"><?php echo $dismissal_types[$cont['dismissal_type']]; ?></td>
+								<?php elseif($cont['dismissal_type'] == CAUGHT): ?>
+									<td><?php echo $dismissal_types[$cont['dismissal_type']] . " " . $losing_team_players[$cont['dismissed_player2']]; ?> </td>
+									<td><?php echo "b " . $losing_team_players[$cont['dismissed_player1']]; ?> </td>
+								<?php elseif($cont['dismissal_type'] == RUN_OUT): ?>
+									<td><?php echo $dismissal_types[$cont['dismissal_type']] . " (" . $losing_team_players[$cont['dismissed_player1']] . ")"; ?> </td>
+									<td></td>
+								<?php elseif($cont['dismissal_type'] == STUMPED): ?>
+									<td><?php echo $dismissal_types[$cont['dismissal_type']]; ?> </td>
+									<td><?php echo "b " . $losing_team_players[$cont['dismissed_player1']]; ?> </td>
+								<?php else: ?>
+									<td></td>
+									<td><?php echo $dismissal_types[$cont['dismissal_type']] . " " . $losing_team_players[$cont['dismissed_player1']]; ?> </td>
+								<?php endif; ?>
+								<td><b><?php echo $cont['bat_runs'] ?></b></td>
+								<td><?php echo $cont['balls_faced'] ?></td>
+							</tr>
+							<?php else: ?>
+							<tr>
+								<td><?php echo $winning_team_players[$cont['player_id']]; ?></td>
+								<td>DNB</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<?php endif; ?>
+						<?php endforeach; ?>			
 					<?php else: ?>
 						<tr>
-							<td colspan="7" class="text-center">No Data Available</td>
+							<td colspan="5" class="text-center">No Data Available</td>
 						</tr>
 					<?php endif; ?>
 					</tbody>
@@ -133,40 +136,20 @@
 						</tr>
 					</thead>
 					<tbody id="player_table_body">
-					<?php if(1/*!empty($batting_stats)*/): ?>			
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>					
+					<?php if(!empty($losing_players_stats)): ?>
+						<?php foreach($losing_players_stats as $cont): ?>
+							<?php if($cont['bowled']): ?>
+							<tr>
+								<td><?php echo $losing_players_stats[$cont['player_id']]; ?></td>
+								<td><?php echo $cont['overs'] ?></td>
+								<td><?php echo $cont['bowl_runs'] ?></td>
+								<td><?php echo $cont['wickets'] ?></td>
+							</tr>
+							<?php endif; ?>
+						<?php endforeach; ?>			
 					<?php else: ?>
 						<tr>
-							<td colspan="7" class="text-center">No Data Available</td>
+							<td colspan="4" class="text-center">No Data Available</td>
 						</tr>
 					<?php endif; ?>
 					</tbody>
@@ -244,40 +227,25 @@
 						</tr>
 					</thead>
 					<tbody id="player_table_body">
-					<?php if(1/*!empty($batting_stats)*/): ?>			
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>
-					<tr>
-						<td>Nasir Jamshed</td>
-						<td>10</td>
-						<td>50</td>
-						<td>1</td>
-					</tr>					
+					<?php if(!empty($winning_players_stats)): $i=0;?>
+						<?php foreach($winning_players_stats as $cont):?>
+							<?php if($cont['bowled']):  $i++;?>
+							<tr>
+								<td><?php echo $winning_team_players[$cont['player_id']]; ?></td>
+								<td><?php echo $cont['overs'] ?></td>
+								<td><?php echo $cont['bowl_runs'] ?></td>
+								<td><?php echo $cont['wickets'] ?></td>
+							</tr>
+							<?php endif; ?>
+						<?php endforeach;?>
+						<?php if($i == 0): ?>
+						<tr>
+							<td colspan="4" class="text-center">No Data Available</td>
+						</tr>
+						<?php endif; ?>			
 					<?php else: ?>
 						<tr>
-							<td colspan="7" class="text-center">No Data Available</td>
+							<td colspan="4" class="text-center">No Data Available</td>
 						</tr>
 					<?php endif; ?>
 					</tbody>

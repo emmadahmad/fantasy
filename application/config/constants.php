@@ -73,6 +73,18 @@ define('WICKET_KEEPER',3);
 define('ALL_ROUNDER',4);
 
 /*
+ * Define Dismissal Types
+ */
+
+define('BOWLED',1);
+define('LBW',2);
+define('CAUGHT',3);
+define('STUMPED',4);
+define('RUN_OUT',5);
+define('HIT_WICKET',6);
+define('NOT_OUT',7);
+
+/*
  * Define Email
  */
 

@@ -365,6 +365,7 @@ class Admin extends CI_Controller
 	{
 		$matches = $this->matches->get_all_matches();
 		$countries = $this->general->get_all('countries');
+		$dismissal_types = $this->general->get_all('dismissal_types');
 		$venues = $this->general->get_all('venues');
 		if($this->session->userdata('alert'))
 		{
@@ -400,18 +401,28 @@ class Admin extends CI_Controller
 			$data['match_info'] = $match_info[0];
 			$venue = $this->general->get_all_by_key('venues', 'venue_id', $data['match']->match_venue);
 			$data['venue'] = $venue[0];
+			$data['dismissal_types'] = select_dismissals(object_to_array($dismissal_types));
 			if($data['match_info']->completed)
 			{
-				$winning_team = $this->general->get_some_by_key('countries', 'country_name', 'country_id', $data['match_info']->winner);
+				$winning_team = $this->general->get_all_by_key('countries', 'country_id', $data['match_info']->winner);
 				$losing_team = ($data['match_info']->winner != $data['match']->home_team) ? $data['match']->home : $data['match']->away;
+				$loser_team_id = ($data['match_info']->winner != $data['match']->home_team) ? $data['match']->home_team : $data['match']->away_team;
+				$winning_team_players = $this->general->get_all_by_key('players', 'player_country', $winning_team[0]->country_id);
+				$losing_team_players = $this->general->get_all_by_key('players', 'player_country', $loser_team_id);
+				$winning_players_stats = $this->general->get_by_keys('player_match_info', array('match_id' => $match_id, 'country_id' =>  $winning_team[0]->country_id), 'batting_position ASC');
+				$losing_players_stats = $this->general->get_by_keys('player_match_info', array('match_id' => $match_id, 'country_id' =>  $loser_team_id), 'batting_position ASC');
   				$data['winning_team'] = $winning_team[0]->country_name;
   				$data['losing_team'] = $losing_team;
 				$result = get_match_result($match_info[0]);
 				$toss_result = get_toss_result($match_info[0]);
 				$data['result'] = $result;
 				$data['toss_result'] = $toss_result;
+  				$data['winning_team_players'] = select_players(object_to_array($winning_team_players));
+  				$data['losing_team_players'] = select_players(object_to_array($losing_team_players));
+  				$data['winning_players_stats'] = players_stats(object_to_array($winning_players_stats));
+  				$data['losing_players_stats'] = players_stats(object_to_array($losing_players_stats));
 			}
-			
+			//print_array($data);die();
 			$this->template->title('Admin', 'View Match Details');
 			$this->template->set_layout('header_footer', 'backend')->
 				build('matches/view_match.php', $data);
@@ -423,6 +434,46 @@ class Admin extends CI_Controller
 			$this->template->title('Admin', 'Add New Match');
 			$this->template->set_layout('header_footer', 'backend')->
 			build('matches/add_match.php', $data);
+		}
+		else if($action == 'add_match_details')
+		{			
+			$match = $this->matches->get_by_id($match_id);
+			$countries = $this->countries->get_playing_countries($match[0]->home_team , $match[0]->away_team);
+			$match_info = $this->general->get_all_by_key('match_info', 'match_id', $match_id);	
+			$venue = $this->general->get_all_by_key('venues', 'venue_id', $match[0]->match_venue);
+			$data['countries'] = select_countries(object_to_array($countries));
+			$data['dismissal_types'] = select_dismissal_types(object_to_array($dismissal_types));
+			$data['venues'] = select_venues(object_to_array($venues));			
+			$data['match'] = $match[0];			
+			$data['countries'] = select_countries(object_to_array($countries));			
+			$data['match_info'] = $match_info[0];			
+			$data['venue'] = $venue[0];
+			if($data['match_info']->completed)
+			{
+				$winning_team = $this->general->get_all_by_key('countries', 'country_id', $data['match_info']->winner);
+				$losing_team = ($data['match_info']->winner != $data['match']->home_team) ? $data['match']->home : $data['match']->away;
+				$loser_team_id = ($data['match_info']->winner != $data['match']->home_team) ? $data['match']->home_team : $data['match']->away_team;
+				$winning_team_players = $this->general->get_all_by_key('players', 'player_country', $winning_team[0]->country_id);
+				$losing_team_players = $this->general->get_all_by_key('players', 'player_country', $loser_team_id);
+				$winning_players_stats = $this->general->get_by_keys('player_match_info', array('match_id' => $match_id, 'country_id' =>  $winning_team[0]->country_id));
+				$losing_players_stats = $this->general->get_by_keys('player_match_info', array('match_id' => $match_id, 'country_id' =>  $loser_team_id));
+				$result = get_match_result($match_info[0]);
+				$toss_result = get_toss_result($match_info[0]);
+				$data['winning_team'] = $winning_team[0]->country_name;
+  				$data['losing_team'] = $losing_team;
+  				$data['winning_team_id'] = $winning_team[0]->country_id;
+  				$data['losing_team_id'] = $loser_team_id;
+  				$data['winning_players_stats'] = players_stats(object_to_array($winning_players_stats));
+  				$data['losing_players_stats'] = players_stats(object_to_array($losing_players_stats));
+  				$data['winning_team_players'] = select_players(object_to_array($winning_team_players));
+  				$data['losing_team_players'] = select_players(object_to_array($losing_team_players));
+				$data['result'] = $result;
+				$data['toss_result'] = $toss_result;
+			}
+			//print_array($data);die();
+			$this->template->title('Admin', 'Add New Match');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('matches/add_match_details.php', $data);
 		}
 		else if($action == 'edit_match')
 		{

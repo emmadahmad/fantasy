@@ -41,41 +41,11 @@ class Countries_model extends CI_Model
     }
   }
 
-  function get_page_by_name_not_id($id,$page_name)
+  function get_playing_countries($country_id1 , $country_id2)
   {
-    $this->db->where('page_id != ',$id);
-    $this->db->where('page_name',$page_name);
-    $query = $this->db->get('pages');
-    if ($query->num_rows() > 0)
-    {
-      return $query->result();
-    }
-    else
-    {
-      return FALSE;
-    }
-  }
-
-  function get_content($page_name)
-  {
-  	$this->db->select('page_content');
-  	$this->db->where('page_name', $page_name);
-  	$query = $this->db->get('pages');
-  	if ($query->num_rows() > 0)
-  	{
-      return $query->result();
-    }
-    else
-    {
-      return FALSE;
-    }
-  }
-
-  function add_page($page_name)
-  {
-    $this->db->select('page_content');
-    $this->db->where('page_name', $page_name);
-    $query = $this->db->get('pages');
+    $this->db->where('country_id', $country_id1);
+    $this->db->or_where('country_id', $country_id2);
+    $query = $this->db->get('countries');
     if ($query->num_rows() > 0)
     {
       return $query->result();

@@ -34,3 +34,43 @@ function select_player_type($player_type)
   }
   return $array;
 }
+
+function select_dismissal_types($dismissal_type)
+{
+  $array = array();
+  foreach($dismissal_type as $cont)
+  {
+    $array[$cont['dismissal_id']] = $cont['dismissal_name'];
+  }
+  return $array;
+}
+
+function select_dismissals($dismissal_type)
+{
+  $array = array();
+  foreach($dismissal_type as $cont)
+  {
+    $array[$cont['dismissal_id']] = $cont['dismissal_abbr'];
+  }
+  return $array;
+}
+
+function select_players($players)
+{
+  $array = array();
+  foreach($players as $cont)
+  {
+    $array[$cont['player_id']] = $cont['player_name'];
+  }
+  return $array;
+}
+
+function players_stats($players)
+{
+  $array = array();
+  foreach($players as $cont)
+  {
+    $array[$cont['player_id']] = $cont;
+  }
+  return $array;
+}

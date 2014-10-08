@@ -6,7 +6,7 @@
 <?php endif; ?>
 <h2 class="page-header">Update Player</h2>
 <div class="inner_content">
-		<div class="panel-group" id="player_accordian">
+	<div class="panel-group" id="player_accordian">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h4 class="panel-title">

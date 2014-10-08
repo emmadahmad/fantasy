@@ -10,6 +10,7 @@ class Form_requests extends CI_Controller
         $this->load->model ( 'pages_model', 'pages' );
         $this->load->model ( 'countries_model', 'countries' );
         $this->load->model ( 'players_model', 'players' );
+        $this->load->model ( 'player_match_info_model', 'player_match' );
         $this->load->model ( 'generic_model', 'general' );
 
         $this->load->helper('form');
@@ -615,4 +616,121 @@ class Form_requests extends CI_Controller
 		$this->session->set_userdata($alert_data);
 		redirect(base_url()."admin/matches");
 	}
+
+	public function addMatchDetails()
+	{
+		if(!empty($_POST))
+		{
+			$match_id = post('match_id');
+			$db_data = array(
+	            'completed' => 1,
+	            'toss_won' => post('toss_won'),
+	            'batting_first' => post('batting_first'),
+	            'winner' => post('winner'),
+	            'winner_runs' => post('winner_runs'),
+	            'winner_wickets' => post('winner_wickets'),
+	            'winner_extras' => post('winner_extras'),
+	            'loser_runs' => post('loser_runs'),
+	            'loser_wickets' => post('loser_wickets'),
+	            'loser_extras' => post('loser_extras'),
+	            'man_of_the_match' => post('man_of_the_match')
+	        );
+
+	        $res = $this->general->update_by_key('match_info', 'match_id', $match_id, $db_data);
+	        $alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "success",
+				'alert_message' => "Match data has been updated successfully.",
+				'panel' => 'info'
+			);			
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/matches/add_match_details/" . $match_id);
+	}
+
+	public function addWinnerDetails()
+	{
+		if(!empty($_POST))
+		{
+			$match_id = post('match_id');
+			$match_info = $this->general->get_all_by_key('match_info', 'match_id', $match_id);	
+			$winning_team = $this->general->get_all_by_key('countries', 'country_id', $match_info[0]->winner);
+			$winning_team_players = $this->general->get_all_by_key('players', 'player_country', $winning_team[0]->country_id);
+			$winning_team_players = select_players(object_to_array($winning_team_players));
+			//print_array($_POST);die();
+			foreach($winning_team_players as $id => $name)
+			{
+				$batted = (post('batted-check-'.$id)) ? 1 : 0;
+				$bowled = (post('bowled-check-'.$id)) ? 1 : 0;
+				$batting_position = (post('batting_position-'.$id)) ? post('batting_position-'.$id) : 15;
+				$bat_runs = (post('bat_runs-'.$id)) ? post('bat_runs-'.$id) : 0;
+				$balls_faced = (post('balls_faced-'.$id)) ? post('balls_faced-'.$id) : 0;
+				$bowl_runs = (post('bowl_runs-'.$id)) ? post('bowl_runs-'.$id) : 0;
+				$overs = (post('overs-'.$id)) ? post('overs-'.$id) : 0;
+				$wickets = (post('wickets-'.$id)) ? post('overs-'.$id) : 0;
+				$dismissal_type = (post('dismissal_type-'.$id)) ? post('dismissal_type-'.$id) : 0;
+				$dismissed_player1 = (post('dismissed_player1-'.$id)) ? post('dismissed_player1-'.$id) : 0;
+				$dismissed_player2 = (post('dismissed_player2-'.$id)) ? post('dismissed_player2-'.$id) : 0;
+				$catches = (post('catches-'.$id)) ? post('catches-'.$id) : 0;
+				$stumps = (post('stumps-'.$id)) ? post('stumps-'.$id) : 0;
+				$runouts = (post('runouts-'.$id)) ? post('runouts-'.$id) : 0;
+
+				$db_data = array(
+					'match_id' => $match_id,
+					'player_id' => $id,
+		            'batted' => $batted,
+		            'bowled' => $bowled,
+		            'batting_position' => $batting_position,
+		            'bat_runs' => $bat_runs,
+		            'balls_faced' => $balls_faced,
+		            'bowl_runs' => $bowl_runs,
+		            'overs' => $overs,
+		            'wickets' => $wickets,
+		            'dismissal_type' => $dismissal_type,
+		            'dismissed_player1' => $dismissed_player1,
+		            'dismissed_player2' => $dismissed_player2,
+		            'catches' => $catches,
+		            'stumps' => $stumps,
+		            'runouts' => $runouts
+		        );
+		        //print_array($db_data);
+		        if ($this->player_match->player_info_exists($match_id, $id))
+		        {
+		        	$keys = array('match_id' => $match_id, 'player_id' => $id);
+		        	$res = $this->general->update_by_keys('player_match_info', $keys, $db_data);
+		        }
+		        else
+		        {
+		        	$res = $this->general->insert_into('player_match_info',$db_data);
+		        }
+			}
+	        //$res = $this->general->update_by_key('match_info', 'match_id', $match_id, $db_data);
+	        $alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "success",
+				'alert_message' => "Match data has been updated successfully.",
+				'panel' => 'info'
+			);			
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/matches/add_match_details/" . $match_id);
+	}
+
+	
 }

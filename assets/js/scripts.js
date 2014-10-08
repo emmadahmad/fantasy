@@ -13,13 +13,63 @@ $(document).ready(function()
 
 	$('.date_only').datetimepicker({
 		pickTime: false
-
 	});
 
 	$('.time_only').datetimepicker({
 		pickDate: false
-
 	});
+
+	$('.player_match_stats').hide();
+	$('.hidden_fields').hide();
+	$('.display_stats').show();	
+
+	$('.batted-check').change(function() 
+	{
+		var id = $(this).val();
+        if($(this).is(":checked"))
+        {
+        	$("#batted-" + id).show();
+        }
+        else
+        {
+        	$("#batted-" + id).hide();
+        }
+    });
+
+    $('.bowled-check').change(function() 
+	{
+		var id = $(this).val();
+        if($(this).is(":checked"))
+        {
+        	$("#bowled-" + id).show();
+        }
+        else
+        {
+        	$("#bowled-" + id).hide();
+        }
+    });
+
+    $('.dismissal-type').on('change', function()
+    {
+    	var id = $(this).data('player-id');
+    	if($(this).val() == 3)
+    	{
+    		$(".dismissal_player1-" + id).show();
+    		$(".dismissal_player2-" + id).show();
+    	}
+    	else if($(this).val() != 7)
+		{
+    		$(".dismissal_player1-" + id).show();
+    		$(".dismissal_player2-" + id).hide();
+    	}
+    	else if($(this).val() == 7)
+		{
+    		$(".dismissal_player1-" + id).hide();
+    		$(".dismissal_player2-" + id).hide();
+    	}
+    });
+
+    
 
 	/*
 	*
