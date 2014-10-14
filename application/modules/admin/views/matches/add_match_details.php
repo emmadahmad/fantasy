@@ -1,4 +1,4 @@
-<?php $panel = ($panel) ? $panel : 'win'; ?>
+<?php $panel = ($panel) ? $panel : 'info'; ?>
 <?php if(isset($alert)): ?>
 	<div class="alert alert-<?php echo $alert_type; ?>">
 		<?php echo $alert_message; ?>
@@ -90,8 +90,9 @@
 							<?php foreach($winning_team_players as $id => $name): ?>
 							<?php $batted_check =  $winning_players_stats[$id]['batted'] ? TRUE : FALSE; ?>
 							<?php $bowled_check =  $winning_players_stats[$id]['bowled'] ? TRUE : FALSE; ?>
-							<?php $out_check =  $winning_players_stats[$id]['dismissal_type'] != 7 ? 'display_stats' : ''; ?>
-							<?php $caught_check =  $winning_players_stats[$id]['dismissal_type'] == 3 ? 'display_stats' : ''; ?>
+							<?php $out_check =  $winning_players_stats[$id]['dismissal_type'] != NOT_OUT && $winning_players_stats[$id]['dismissal_type'] ? 'display_stats' : ''; ?>
+							<?php $caught_check =  $winning_players_stats[$id]['dismissal_type'] == CAUGHT ? 'display_stats' : ''; ?>
+							<?php $dismissal_t =  $winning_players_stats[$id]['dismissal_type'] ? $winning_players_stats[$id]['dismissal_type'] : NOT_OUT; ?>
 							<div class="col-md-12">
 								<div class="row player_names">	
 									<div class="col-md-1">
@@ -111,19 +112,19 @@
 								<div class="row player_match_stats <?php echo $batted_check ? 'display_stats' : ''; ?>" id="batted-<?php echo $id; ?>">
 									<div class="col-md-2">
 										<label for="batting_position-<?php echo $id; ?>">Batting Position</label>
-										<input type="text" class="form-control validate[required]" id="batting_position-<?php echo $id; ?>" name="batting_position-<?php echo $id; ?>" placeholder="Batting Position" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['batting_position'] ? $winning_players_stats[$id]['batting_position'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="batting_position-<?php echo $id; ?>" name="batting_position-<?php echo $id; ?>" placeholder="Batting Position" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['batting_position']) ? $winning_players_stats[$id]['batting_position'] : ''; ?>">
 									</div>
 									<div class="col-md-2">
 										<label for="balls_faced-<?php echo $id; ?>">Balls Faced</label>
-										<input type="text" class="form-control validate[required]" id="balls_faced-<?php echo $id; ?>" name="balls_faced-<?php echo $id; ?>" placeholder="Balls Faced" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['balls_faced'] ? $winning_players_stats[$id]['balls_faced'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="balls_faced-<?php echo $id; ?>" name="balls_faced-<?php echo $id; ?>" placeholder="Balls Faced" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['balls_faced']) ? $winning_players_stats[$id]['balls_faced'] : ''; ?>">
 									</div>
 									<div class="col-md-2">
 										<label for="bat_runs-<?php echo $id; ?>">Runs</label>
-										<input type="text" class="form-control validate[required]" id="bat_runs-<?php echo $id; ?>" name="bat_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['bat_runs'] ? $winning_players_stats[$id]['bat_runs'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="bat_runs-<?php echo $id; ?>" name="bat_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['bat_runs']) ? $winning_players_stats[$id]['bat_runs'] : ''; ?>">
 									</div>
 									<div class="col-md-2">
 										<label for="dismissal_type-<?php echo $id; ?>">Dismissal Type</label>
-										<?php echo form_dropdown('dismissal_type-'.$id, $dismissal_types, $winning_players_stats[$id]['dismissal_type'], 'id="dismissal_type-'.$id.'" class="form-control validate[required] dismissal-type" data-player-id='.$id.' data-prompt-position="topLeft"'); ?>
+										<?php echo form_dropdown('dismissal_type-'.$id, $dismissal_types, $dismissal_t, 'id="dismissal_type-'.$id.'" class="form-control validate[required] dismissal-type" data-player-id='.$id.' data-prompt-position="topLeft"'); ?>
 									</div>
 									<div class="col-md-2 hidden_fields dismissal_player1-<?php echo $id; ?> <?php echo $out_check; ?>">
 										<label for="dismissed_player1-<?php echo $id; ?>">Dismissed By</label>
@@ -139,27 +140,15 @@
 								<div class="row player_match_stats <?php echo $bowled_check ? 'display_stats' : ''; ?>" id="bowled-<?php echo $id; ?>">
 									<div class="col-md-2">
 										<label for="overs-<?php echo $id; ?>">Overs</label>
-										<input type="text" class="form-control validate[required]" id="overs-<?php echo $id; ?>" name="overs-<?php echo $id; ?>" placeholder="Overs" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['overs'] ? $winning_players_stats[$id]['overs'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="overs-<?php echo $id; ?>" name="overs-<?php echo $id; ?>" placeholder="Overs" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['overs']) ? $winning_players_stats[$id]['overs'] : ''; ?>">
 									</div>
 									<div class="col-md-2">
 										<label for="wickets-<?php echo $id; ?>">Wickets</label>
-										<input type="text" class="form-control validate[required]" id="wickets-<?php echo $id; ?>" name="wickets-<?php echo $id; ?>" placeholder="Wickets" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['wickets'] ? $winning_players_stats[$id]['wickets'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="wickets-<?php echo $id; ?>" name="wickets-<?php echo $id; ?>" placeholder="Wickets" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['wickets']) ? $winning_players_stats[$id]['wickets'] : ''; ?>">
 									</div>
 									<div class="col-md-2">
 										<label for="bowl_runs-<?php echo $id; ?>">Runs</label>
-										<input type="text" class="form-control validate[required]" id="bowl_runs-<?php echo $id; ?>" name="bowl_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['bowl_runs'] ? $winning_players_stats[$id]['bowl_runs'] : ''; ?>">
-									</div>
-									<div class="col-md-2">
-										<label for="catches-<?php echo $id; ?>">Catches</label>
-										<input type="text" class="form-control validate[required]" id="catches-<?php echo $id; ?>" name="catches-<?php echo $id; ?>" placeholder="Catches" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['catches'] ? $winning_players_stats[$id]['catches'] : ''; ?>">
-									</div>
-									<div class="col-md-2">
-										<label for="stumps-<?php echo $id; ?>">Stumps</label>
-										<input type="text" class="form-control validate[required]" id="stumps-<?php echo $id; ?>" name="stumps-<?php echo $id; ?>" placeholder="Stumps" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['stumps'] ? $winning_players_stats[$id]['stumps'] : ''; ?>">
-									</div>
-									<div class="col-md-2">
-										<label for="runouts-<?php echo $id; ?>">Runouts</label>
-										<input type="text" class="form-control validate[required]" id="runouts-<?php echo $id; ?>" name="runouts-<?php echo $id; ?>" placeholder="Runouts" data-prompt-position="topLeft" value="<?php echo $winning_players_stats[$id]['runouts'] ? $winning_players_stats[$id]['runouts'] : ''; ?>">
+										<input type="text" class="form-control validate[required]" id="bowl_runs-<?php echo $id; ?>" name="bowl_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['bowl_runs']) ? $winning_players_stats[$id]['bowl_runs'] : ''; ?>">
 									</div>
 								</div>
 								<br>
@@ -189,15 +178,89 @@
 			</div>
 			<div id="winner_bowling_details" class="panel-collapse collapse <?php echo ($panel == 'lose') ? 'in' : ''; ?>">
 				<div class="panel-body">
+					<form role="form" id="frm_add_loser_details" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addLoserDetails" method="post">
+						<div class="row">
+							<?php foreach($losing_team_players as $id => $name): ?>
+							<?php $batted_check =  $losing_players_stats[$id]['batted'] ? TRUE : FALSE; ?>
+							<?php $bowled_check =  $losing_players_stats[$id]['bowled'] ? TRUE : FALSE; ?>
+							<?php $out_check =  $losing_players_stats[$id]['dismissal_type'] != NOT_OUT && $losing_players_stats[$id]['dismissal_type'] ? 'display_stats' : ''; ?>
+							<?php $caught_check =  $losing_players_stats[$id]['dismissal_type'] == CAUGHT ? 'display_stats' : ''; ?>
+							<?php $dismissal_t =  $losing_players_stats[$id]['dismissal_type'] ? $losing_players_stats[$id]['dismissal_type'] : NOT_OUT; ?>
+							<div class="col-md-12">
+								<div class="row player_names">	
+									<div class="col-md-1">
+										<label class="checkbox-inline">
+											<input type="checkbox" class="batted-check" name="batted-check-<?php echo $id; ?>" <?php echo $batted_check ? 'checked' : ''; ?> value="<?php echo $id; ?>"> Bat
+										</label>
+									</div>
+									<div class="col-md-1">
+										<label class="checkbox-inline">
+											<input type="checkbox" class="bowled-check" name="bowled-check-<?php echo $id; ?>" <?php echo $bowled_check ? 'checked' : ''; ?> value="<?php echo $id; ?>"> Bowl
+										</label>
+									</div>								
+									<div class="col-md-8">
+										<p><strong><?php echo $name; ?></strong></p>
+									</div>
+								</div>
+								<div class="row player_match_stats <?php echo $batted_check ? 'display_stats' : ''; ?>" id="batted-<?php echo $id; ?>">
+									<div class="col-md-2">
+										<label for="batting_position-<?php echo $id; ?>">Batting Position</label>
+										<input type="text" class="form-control validate[required]" id="batting_position-<?php echo $id; ?>" name="batting_position-<?php echo $id; ?>" placeholder="Batting Position" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['batting_position']) ? $losing_players_stats[$id]['batting_position'] : ''; ?>">
+									</div>
+									<div class="col-md-2">
+										<label for="balls_faced-<?php echo $id; ?>">Balls Faced</label>
+										<input type="text" class="form-control validate[required]" id="balls_faced-<?php echo $id; ?>" name="balls_faced-<?php echo $id; ?>" placeholder="Balls Faced" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['balls_faced']) ? $losing_players_stats[$id]['balls_faced'] : ''; ?>">
+									</div>
+									<div class="col-md-2">
+										<label for="bat_runs-<?php echo $id; ?>">Runs</label>
+										<input type="text" class="form-control validate[required]" id="bat_runs-<?php echo $id; ?>" name="bat_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['bat_runs']) ? $losing_players_stats[$id]['bat_runs'] : ''; ?>">
+									</div>
+									<div class="col-md-2">
+										<label for="dismissal_type-<?php echo $id; ?>">Dismissal Type</label>
+										<?php echo form_dropdown('dismissal_type-'.$id, $dismissal_types, $dismissal_t, 'id="dismissal_type-'.$id.'" class="form-control validate[required] dismissal-type" data-player-id='.$id.' data-prompt-position="topLeft"'); ?>
+									</div>
+									<div class="col-md-2 hidden_fields dismissal_player1-<?php echo $id; ?> <?php echo $out_check; ?>">
+										<label for="dismissed_player1-<?php echo $id; ?>">Dismissed By</label>
+										<?php echo form_dropdown('dismissed_player1-'.$id, $winning_team_players, $losing_players_stats[$id]['dismissed_player1'], 'id="dismissed_player1-'.$id.'" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+									</div>
+									<div class="col-md-2 hidden_fields dismissal_player2-<?php echo $id; ?> <?php echo $caught_check; ?>">
+										<label for="dismissed_player2-<?php echo $id; ?>">Caught By</label>
+										<?php echo form_dropdown('dismissed_player2-'.$id, $winning_team_players, $losing_players_stats[$id]['dismissed_player2'], 'id="dismissed_player2-'.$id.'" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+									</div>
 
+								</div>
+								<br>
+								<div class="row player_match_stats <?php echo $bowled_check ? 'display_stats' : ''; ?>" id="bowled-<?php echo $id; ?>">
+									<div class="col-md-2">
+										<label for="overs-<?php echo $id; ?>">Overs</label>
+										<input type="text" class="form-control validate[required]" id="overs-<?php echo $id; ?>" name="overs-<?php echo $id; ?>" placeholder="Overs" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['overs']) ? $losing_players_stats[$id]['overs'] : ''; ?>">
+									</div>
+									<div class="col-md-2">
+										<label for="wickets-<?php echo $id; ?>">Wickets</label>
+										<input type="text" class="form-control validate[required]" id="wickets-<?php echo $id; ?>" name="wickets-<?php echo $id; ?>" placeholder="Wickets" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['wickets']) ? $losing_players_stats[$id]['wickets'] : ''; ?>">
+									</div>
+									<div class="col-md-2">
+										<label for="bowl_runs-<?php echo $id; ?>">Runs</label>
+										<input type="text" class="form-control validate[required]" id="bowl_runs-<?php echo $id; ?>" name="bowl_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['bowl_runs']) ? $losing_players_stats[$id]['bowl_runs'] : ''; ?>">
+									</div>
+								</div>
+								<br>
+							</div>
+							<?php endforeach; ?>
+						</div>
+						<br>
+						<div class="row">
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-primary">Save</button>
+								<a href="<?php echo base_url(); ?>admin/matches/view_match/<?php echo $match->match_id; ?>" class="btn btn-default" role="button">Back</a>
+								<input type="hidden" name="match_id" value="<?php echo $match->match_id; ?>">
+								<input type="hidden" name="country_id" value="<?php echo $losing_team_id; ?>">
+							</div>
+						</div>								
+					</form>
 				</div>
 			</div>
 		</div>
 		<?php endif; ?>
-	</div>
-
-
-
-
-					
+	</div>					
 </div>

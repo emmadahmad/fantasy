@@ -200,7 +200,7 @@ class Admin extends CI_Controller
 			$data['alert'] = $this->session->userdata('alert');
 			$data['alert_type'] = $this->session->userdata('alert_type');
 			$data['alert_message'] = $this->session->userdata('alert_message');
-			if($this->session->userdata('alert_message'))
+			if($this->session->userdata('panel'))
 			{
 				$data['panel'] = $this->session->userdata('panel');
 			}
@@ -372,6 +372,10 @@ class Admin extends CI_Controller
 			$data['alert'] = $this->session->userdata('alert');
 			$data['alert_type'] = $this->session->userdata('alert_type');
 			$data['alert_message'] = $this->session->userdata('alert_message');
+			if($this->session->userdata('panel'))
+			{
+				$data['panel'] = $this->session->userdata('panel');
+			}
 			$alert_data = array(
                    'alert'  => FALSE,
                    'alert_type'     => null,

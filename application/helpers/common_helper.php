@@ -320,3 +320,135 @@ function get_toss_result($match_info)
   }
   return $string;
 }
+
+function update_catches($match_id, $player_id, $country_id)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $CI->load->model ( 'player_match_info_model', 'player_match' );
+
+  $catches = $CI->player_match->get_catches($match_id, $player_id);
+  $catches = $catches[0]->catches;
+  $db_data = array(
+    'match_id' => $match_id,
+    'player_id' => $player_id,
+    'country_id' => $country_id,
+    'catches' => $catches
+  );
+  if ($CI->player_match->player_info_exists($match_id, $player_id))
+  {
+    $keys = array('match_id' => $match_id, 'player_id' => $player_id);
+    $res = $CI->general->update_by_keys('player_match_info', $keys, $db_data);
+  }
+  else
+  {
+    $res = $CI->general->insert_into('player_match_info',$db_data);
+  }
+  if($res)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
+function update_runouts($match_id, $player_id, $country_id)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $CI->load->model ( 'player_match_info_model', 'player_match' );
+
+  $runouts = $CI->player_match->get_runouts($match_id, $player_id);
+  $runouts = $runouts[0]->runouts;
+  $db_data = array(
+    'match_id' => $match_id,
+    'player_id' => $player_id,
+    'country_id' => $country_id,
+    'runouts' => $runouts
+  );
+  if ($CI->player_match->player_info_exists($match_id, $player_id))
+  {
+    $keys = array('match_id' => $match_id, 'player_id' => $player_id);
+    $res = $CI->general->update_by_keys('player_match_info', $keys, $db_data);
+  }
+  else
+  {
+    $res = $CI->general->insert_into('player_match_info',$db_data);
+  }
+  if($res)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
+function update_stumps($match_id, $player_id, $country_id)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $CI->load->model ( 'player_match_info_model', 'player_match' );
+
+  $stumps = $CI->player_match->get_stumps($match_id, $player_id);
+  $stumps = $stumps[0]->stumps;
+  $db_data = array(
+    'match_id' => $match_id,
+    'player_id' => $player_id,
+    'country_id' => $country_id,
+    'stumps' => $stumps
+  );
+  if ($CI->player_match->player_info_exists($match_id, $player_id))
+  {
+    $keys = array('match_id' => $match_id, 'player_id' => $player_id);
+    $res = $CI->general->update_by_keys('player_match_info', $keys, $db_data);
+  }
+  else
+  {
+    $res = $CI->general->insert_into('player_match_info',$db_data);
+  }
+  if($res)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
+function update_wickets($match_id, $player_id, $country_id)
+{
+  global $CI;
+  $CI->load->model('generic_model' , 'general');
+  $CI->load->model ( 'player_match_info_model', 'player_match' );
+
+  $wickets = $CI->player_match->get_wickets($match_id, $player_id);
+  $wickets = $wickets[0]->wickets;
+  $db_data = array(
+    'match_id' => $match_id,
+    'player_id' => $player_id,
+    'country_id' => $country_id,
+    'wickets' => $wickets
+  );
+  if ($CI->player_match->player_info_exists($match_id, $player_id))
+  {
+    $keys = array('match_id' => $match_id, 'player_id' => $player_id);
+    $res = $CI->general->update_by_keys('player_match_info', $keys, $db_data);
+  }
+  else
+  {
+    $res = $CI->general->insert_into('player_match_info',$db_data);
+  }
+  if($res)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
