@@ -29,7 +29,7 @@
 			</dl>
 		</div>
 		<div class="col-md-4">
-			<img src="/uploads/players/<?php echo $player_stats->player_photo; ?>" width="100" alt="Responsive image">
+			<img src="<?php echo base_url(); ?>/uploads/players/<?php echo $player_stats->player_photo; ?>" width="100" alt="Responsive image">
 		</div>
 	</div>
 	<br>
