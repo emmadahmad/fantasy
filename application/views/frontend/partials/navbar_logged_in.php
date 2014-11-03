@@ -36,8 +36,8 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <p class="navbar-text">Emmad Ahmad</p>
-        <li><a href="#">Logout</a></li>
+        <p class="navbar-text"><?php echo $this->session->userdata('user_name') ? $this->session->userdata('user_name') : 'Player' ; ?></p>
+        <li><a href="<?php echo base_url(); ?>fantasy/logout">Logout</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>

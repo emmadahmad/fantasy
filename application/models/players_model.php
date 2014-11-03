@@ -114,5 +114,37 @@ class Players_model extends CI_Model
       return FALSE;
     }
   }
+
+  function get_match_players($country1, $country2)
+  {
+    $this->db->from('players');
+    $this->db->where('player_country', $country1);
+    $this->db->or_where('player_country', $country2);
+    $query = $this->db->get();
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
+
+  function get_player_stats_by_type($player_type = BATSMEN)
+  {
+    $this->db->from('players');
+    $this->db->join('player_match_stats', 'players.player_id = player_match_stats.player_id');
+    $this->db->where('players.player_type', $player_type);
+    $query = $this->db->get();
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
 }
 ?>

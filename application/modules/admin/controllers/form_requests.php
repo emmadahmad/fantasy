@@ -11,6 +11,7 @@ class Form_requests extends CI_Controller
         $this->load->model ( 'countries_model', 'countries' );
         $this->load->model ( 'players_model', 'players' );
         $this->load->model ( 'player_match_info_model', 'player_match' );
+        $this->load->model ( 'player_match_stats_model', 'player_stats' );
         $this->load->model ( 'matches_model', 'matches' );
         $this->load->model ( 'generic_model', 'general' );
 
@@ -50,6 +51,20 @@ class Form_requests extends CI_Controller
 		        $new_res = $this->general->insert_into('players',$db_data);
 		        if($new_res)
 		        {
+		        	$upload = file_uploader($_FILES['player_photo'],$new_res,'players');
+		        	if($upload)
+		        	{
+		        		$pic_db = array(
+			        		'player_photo' => $upload
+		        		);
+		        		$picture = $this->general->update_by_key('players','player_id',$new_res,$pic_db);
+		        	}
+
+		        	
+	        		$db_price = array(
+		        		'player_id' => $new_res,
+		        		'price' => post('price')
+	        		);
 		        	$db_stats = array(
 		        		'player_id' => $new_res
 	        		);
@@ -60,6 +75,7 @@ class Form_requests extends CI_Controller
 		        	$temp = $this->general->insert_into('batting_stats',$db_stats);
 		        	$temp = $this->general->insert_into('bowling_stats',$db_stats);
 		        	$temp = $this->general->insert_into('player_stats',$db_player_stats);
+		        	$temp = $this->general->insert_into('player_match_stats',$db_price);
 		        	$alert_data = array(
 						'alert'  => TRUE,
 						'alert_type'     => "success",
@@ -261,9 +277,10 @@ class Form_requests extends CI_Controller
 			}
 			else
 			{
+				$upload = file_uploader($_FILES['country_flag'],post('country_name'),'flags');
 				$db_data = array(
 		            'country_name' => post('country_name'),
-		            'country_flag' => post('country_flag')
+		            'country_flag' => $upload
 		        );
 		        $new_res = $this->general->insert_into('countries',$db_data);
 		        $alert_data = array(
@@ -668,7 +685,7 @@ class Form_requests extends CI_Controller
 			$loser_team_id = ($match_info[0]->winner != $match[0]->home_team) ? $match[0]->home_team : $match[0]->away_team;
 			$winning_team_players = $this->general->get_all_by_key('players', 'player_country', $winning_team[0]->country_id);
 			$winning_team_players = select_players(object_to_array($winning_team_players));
-			//print_array($_POST);die();
+
 			foreach($winning_team_players as $id => $name)
 			{
 				$batted = (post('batted-check-'.$id)) ? 1 : 0;
@@ -678,8 +695,10 @@ class Form_requests extends CI_Controller
 				$balls_faced = (post('balls_faced-'.$id)) ? post('balls_faced-'.$id) : 0;
 				$bowl_runs = (post('bowl_runs-'.$id)) ? post('bowl_runs-'.$id) : 0;
 				$overs = (post('overs-'.$id)) ? post('overs-'.$id) : 0;
-				$wickets = (post('wickets-'.$id)) ? post('wickets-'.$id) : 0;
+				$wickets = $this->general->get_some_by_key('player_match_info', 'wickets', 'player_id', $id);
+
 				$dismissal_type = (post('dismissal_type-'.$id)) ? post('dismissal_type-'.$id) : 0;
+				$country_id = (post('country_id')) ? post('country_id') : 0;
 				if($dismissal_type != NOT_OUT)
 					$dismissed_player1 = (post('dismissed_player1-'.$id)) ? post('dismissed_player1-'.$id) : 0;
 				else 
@@ -688,15 +707,35 @@ class Form_requests extends CI_Controller
 					$dismissed_player2 = (post('dismissed_player2-'.$id)) ? post('dismissed_player2-'.$id) : 0;
 				else 
 					$dismissed_player2 = 0;
-				$country_id = (post('country_id')) ? post('country_id') : 0;
 
 				$over_balls = floor($overs)*6;
 				$balls_decimal = ($overs - floor($overs))*10;
 				$over_balls +=  $balls_decimal;
 
 				$batting_sr = calc_bat_sr($bat_runs, $balls_faced);
-				$bowling_sr = calc_bowl_sr($over_balls, $wickets);
-				$bowling_econ = calc_bowl_econ($bowl_runs, $overs);				
+				$bowling_econ = calc_bowl_econ($bowl_runs, $overs);
+				if(!is_null($wickets))
+				{
+					$wickets = $wickets[0]->wickets;
+					$bowling_sr = calc_bowl_sr($over_balls, $wickets);
+				}
+				else
+				{
+					$bowling_sr = 0;
+				}
+
+				/* add player basic info */
+
+				$player_info = array(
+					'match_id' => $match_id,
+					'player_id' => $id,
+					'country_id' => $country_id
+				);
+
+				if (!$this->player_match->player_info_exists($match_id, $id))
+		        {
+		        	$res = $this->general->insert_into('player_match_info',$player_info);
+		        }
 
 				$db_data = array(
 					'match_id' => $match_id,
@@ -709,7 +748,6 @@ class Form_requests extends CI_Controller
 		            'balls_faced' => $balls_faced,
 		            'bowl_runs' => $bowl_runs,
 		            'overs' => $overs,
-		            'wickets' => $wickets,
 		            'dismissal_type' => $dismissal_type,
 		            'dismissed_player1' => $dismissed_player1,
 		            'dismissed_player2' => $dismissed_player2,
@@ -720,17 +758,16 @@ class Form_requests extends CI_Controller
 		        $points = calculate_points($db_data);
 		        $db_data['points'] = $points;
 
-		        if ($this->player_match->player_info_exists($match_id, $id))
-		        {
-		        	$keys = array('match_id' => $match_id, 'player_id' => $id);
-		        	$res = $this->general->update_by_keys('player_match_info', $keys, $db_data);
-		        }
-		        else
-		        {
-		        	$res = $this->general->insert_into('player_match_info',$db_data);
-		        }
-		        $stats_data = array(
-	        	);
+		        /* Adding/updating match stats in player_match_info */
+		        $keys = array('match_id' => $match_id, 'player_id' => $id);
+	        	$res = $this->general->update_by_keys('player_match_info', $keys, $db_data);
+
+		        /* Adding/updating player fantasy stats in player_match_stats */
+		        $stats_data = calculate_stats($id);
+		        $keys = array('player_id' => $id);
+	        	$res = $this->general->update_by_keys('player_match_stats', $keys, $stats_data);
+
+	        	/* Updating wickets/catches/stumps/runouts */
 	        	if($dismissal_type != NOT_OUT)
 	        	{
 	        		$res_dismiss = update_wickets($match_id, $dismissed_player1, $loser_team_id);
@@ -746,7 +783,7 @@ class Form_requests extends CI_Controller
 		        else if($dismissal_type == STUMPED)
 		        {
 		        	$res_dismiss = update_stumps($match_id, $dismissed_player1, $loser_team_id);
-		        }
+		        }		        
 			}
 	        $alert_data = array(
 				'alert'  => TRUE,
@@ -790,7 +827,8 @@ class Form_requests extends CI_Controller
 				$balls_faced = (post('balls_faced-'.$id)) ? post('balls_faced-'.$id) : 0;
 				$bowl_runs = (post('bowl_runs-'.$id)) ? post('bowl_runs-'.$id) : 0;
 				$overs = (post('overs-'.$id)) ? post('overs-'.$id) : 0;
-				$wickets = (post('wickets-'.$id)) ? post('wickets-'.$id) : 0;
+				$wickets = $this->general->get_some_by_key('player_match_info', 'wickets', 'player_id', $id);
+
 				$dismissal_type = (post('dismissal_type-'.$id)) ? post('dismissal_type-'.$id) : 0;
 				if($dismissal_type != NOT_OUT)
 					$dismissed_player1 = (post('dismissed_player1-'.$id)) ? post('dismissed_player1-'.$id) : 0;
@@ -807,8 +845,29 @@ class Form_requests extends CI_Controller
 				$over_balls +=  $balls_decimal;
 
 				$batting_sr = calc_bat_sr($bat_runs, $balls_faced);
-				$bowling_sr = calc_bowl_sr($over_balls, $wickets);
 				$bowling_econ = calc_bowl_econ($bowl_runs, $overs);
+				if(!is_null($wickets))
+				{
+					$wickets = $wickets[0]->wickets;
+					$bowling_sr = calc_bowl_sr($over_balls, $wickets);
+				}
+				else
+				{
+					$bowling_sr = 0;
+				}
+
+				/* add player basic info */
+
+				$player_info = array(
+					'match_id' => $match_id,
+					'player_id' => $id,
+					'country_id' => $country_id
+				);
+
+				if (!$this->player_match->player_info_exists($match_id, $id))
+		        {
+		        	$res = $this->general->insert_into('player_match_info',$player_info);
+		        }
 
 				$db_data = array(
 					'match_id' => $match_id,
@@ -821,7 +880,6 @@ class Form_requests extends CI_Controller
 		            'balls_faced' => $balls_faced,
 		            'bowl_runs' => $bowl_runs,
 		            'overs' => $overs,
-		            'wickets' => $wickets,
 		            'dismissal_type' => $dismissal_type,
 		            'dismissed_player1' => $dismissed_player1,
 		            'dismissed_player2' => $dismissed_player2,
@@ -832,15 +890,16 @@ class Form_requests extends CI_Controller
 		        $points = calculate_points($db_data);
 		        $db_data['points'] = $points;
 
-		        if ($this->player_match->player_info_exists($match_id, $id))
-		        {
-		        	$keys = array('match_id' => $match_id, 'player_id' => $id);
-		        	$res = $this->general->update_by_keys('player_match_info', $keys, $db_data);
-		        }
-		        else
-		        {
-		        	$res = $this->general->insert_into('player_match_info',$db_data);
-		        }
+				/* Adding/updating match stats in player_match_info */
+		        $keys = array('match_id' => $match_id, 'player_id' => $id);
+	        	$res = $this->general->update_by_keys('player_match_info', $keys, $db_data);
+
+		        /* Adding/updating player fantasy stats in player_match_stats */
+		        $stats_data = calculate_stats($id);
+		        $keys = array('player_id' => $id);
+	        	$res = $this->general->update_by_keys('player_match_stats', $keys, $stats_data);
+
+		        /* Updating wickets/catches/stumps/runouts */
 		        if($dismissal_type != NOT_OUT)
 	        	{
 	        		$res_dismiss = update_wickets($match_id, $dismissed_player1, $winning_team_id);
@@ -864,6 +923,32 @@ class Form_requests extends CI_Controller
 				'alert_message' => "Match data has been updated successfully.",
 				'panel' => 'lose'
 			);			
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/matches/add_match_details/" . $match_id);
+	}
+
+	public function calculatePoints()
+	{
+		if(!empty($_POST))
+		{
+			$match_id = post('match_id');
+			$players = $this->general->get_all_by_key('player_match_info', 'match_id', $match_id,'player_id ASC');
+			update_points($players);
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "success",
+				'alert_message' => "Match data has been updated successfully.",
+				'panel' => 'info'
+			);
 		}
 		else
 		{

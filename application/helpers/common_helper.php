@@ -5,13 +5,40 @@
  * and open the template in the editor.
  */
 $CI = & get_instance();
-function authenticate()
+function authenticate_client()
 {
-	if(!get_session("is_login") && !get_session('user_id'))
+	if(!get_session("is_client_login") && !get_session('user_id'))
 	{
-		 //redirect('/translation/frontend/projects/message', 'refresh');
+		 redirect('/fantasy/login', 'refresh');
 	}
 }
+
+function authenticate_admin()
+{
+  if(!get_session("is_admin_login") && !get_session('admin_id'))
+  {
+     //redirect('/translation/frontend/projects/message', 'refresh');
+  }
+}
+
+function is_client_logged_in()
+{
+  if(!get_session("is_client_login") && !get_session('user_id'))
+  {
+     return FALSE;
+  }
+  else
+  {
+    return TRUE;
+  }
+}
+
+function test_session()
+{
+  $CI = & get_instance();
+  print_array($CI->session->all_userdata());
+}
+
 function set_session($session_array) 
 {
   $CI = & get_instance();
@@ -450,5 +477,63 @@ function update_wickets($match_id, $player_id, $country_id)
   else
   {
     return FALSE;
+  }
+}
+
+function file_uploader($files,$filename = null,$action = 'flags')
+{
+  $file_upload="true";
+  $file_up_size=$files['size'];
+  if ($files['size']>250000)
+  {
+    $msg=$msg."Your uploaded file size is more than 250KB so please reduce the file size and then upload.<BR>";
+    $file_upload="false";
+  }
+  if (!($files['type'] =="image/jpeg" OR $files['type'] =="image/gif" OR $files['type'] =="image/png"))
+  {
+    $msg=$msg."Your uploaded file must be of JPG or GIF. Other file types are not allowed<BR>";
+    $file_upload="false";
+  }
+
+  if(!$filename)
+  {
+    $filename=$files['name'];
+  }
+  else
+  {
+    $file = $files['name'];
+    $file = explode(".",$file);
+    $count = count($file);
+    $format = $file[$count-1];
+    $filename .= ".".$format;
+  }
+
+  if($action == 'flags')
+  {
+    $add="uploads/flags/$filename";
+  }
+  else if($action == 'players')
+  {
+    $add="uploads/players/$filename";
+  }
+  else
+  {
+    $add="uploads/$filename";
+  } 
+
+  if($file_upload=="true")
+  {
+    if(move_uploaded_file ($files['tmp_name'], $add))
+    {
+      return $filename;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    return 0;
   }
 }

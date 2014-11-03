@@ -218,16 +218,19 @@ class Admin extends CI_Controller
 			$player_stats = $this->players->get_player_stats($player_id);
 			$batting_stats = $this->players->get_batting_stats($player_id);
 			$bowling_stats = $this->players->get_bowling_stats($player_id);
+			$player_league_stats = $this->general->get_all_by_key('player_match_stats', 'player_id', $player_id);
 
 			$player_info = $player_info[0];
 			$player_stats = $player_stats[0];
 			$batting_stats = $batting_stats[0];
 			$bowling_stats = $bowling_stats[0];
+			$player_league_stats = $player_league_stats[0];
 
 			$data['player_info'] = $player_info;
 			$data['player_stats'] = $player_stats;
 			$data['batting_stats'] = $batting_stats;
 			$data['bowling_stats'] = $bowling_stats;
+			$data['player_league_stats'] = $player_league_stats;
 		}
 		
 		if($action == null)
@@ -440,8 +443,9 @@ class Admin extends CI_Controller
 			build('matches/add_match.php', $data);
 		}
 		else if($action == 'add_match_details')
-		{			
+		{
 			$match = $this->matches->get_by_id($match_id);
+			$all_players = $this->players->get_match_players($match[0]->home_team , $match[0]->away_team);
 			$countries = $this->countries->get_playing_countries($match[0]->home_team , $match[0]->away_team);
 			$match_info = $this->general->get_all_by_key('match_info', 'match_id', $match_id);	
 			$venue = $this->general->get_all_by_key('venues', 'venue_id', $match[0]->match_venue);
@@ -452,6 +456,7 @@ class Admin extends CI_Controller
 			$data['countries'] = select_countries(object_to_array($countries));			
 			$data['match_info'] = $match_info[0];			
 			$data['venue'] = $venue[0];
+			$data['all_players'] = select_players(object_to_array($all_players));
 			if($data['match_info']->completed)
 			{
 				$winning_team = $this->general->get_all_by_key('countries', 'country_id', $data['match_info']->winner);

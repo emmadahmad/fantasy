@@ -49,10 +49,9 @@ define("USER_LIMITED",3);
  * Define User Status
  */
 
-define('USER_BLOCKED',0); //0 is stored in DB if user is blocked
-define('USER_VALID',1); //1 is stored in DB if user is valid
-define('USER_INVALID',2); //2 is flag for invalid credentials
-define('USER_NA',3); //3 is flag for not exsisting user
+define('USER_INVALID',0); //credentials are invalid
+define('USER_VALID',1); //user exists
+define('USER_NA',2); //User does not exist
 
 /*
  * Define Return status
@@ -69,8 +68,8 @@ define('RETURN_NO_RESULT',3);
 
 define('BATSMAN',1);
 define('BOWLER',2);
-define('WICKET_KEEPER',3);
-define('ALL_ROUNDER',4);
+define('ALL_ROUNDER',3);
+define('WICKET_KEEPER',4);
 
 /*
  * Define Dismissal Types

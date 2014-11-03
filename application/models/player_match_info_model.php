@@ -113,5 +113,26 @@ class Player_match_info_model extends CI_Model
       return FALSE;
     }
   }
+
+  function get_stats_data($player_id)
+  {
+    $query = $this->db->query('select count(*) as matches_played, sum(batted) as batted, (Select count(*) FROM player_match_info where player_id = '.$player_id.' and dismissal_type = 7) as not_outs,
+    sum(bat_runs) as bat_runs, sum(balls_faced) as balls_faced, sum(bowled) as bowled, sum(bowl_runs) as bowl_runs, sum(wickets) as wickets, 
+    round(sum((floor(overs)*6) + ((overs - floor(overs))*10)),0) as balls, sum(points) as points,
+    sum(catches) as catches, sum(stumps) as stumps, sum(runouts) as runouts from player_match_info where player_id = '.$player_id);
+    //$this->db->where('player_id', $player_id);
+    //$query = $this->db->get();
+    if ($query->num_rows() > 0)
+    {
+      $result = $query->result()[0];
+      return $result;
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
+
+  
 }
 ?>

@@ -1,5 +1,73 @@
 $(document).ready(function()
 {
+	$("#notices").hide();
+
+	var player_limit = 11;
+	var player_counter = $("#player_cart ul li:not(.placeholder)").length;
+	$( ".drag" ).draggable({
+		appendTo: "body",
+		helper: "clone",
+		cursor: "pointer",
+		revert: "invalid"
+	});
+
+	$( "#player_cart" ).droppable(
+	{
+		activeClass: "ui-state-default",
+		hoverClass: "ui-state-hover",
+		accept: ":not(.ui-sortable-helper) :not(.listed)",
+		drop: function( event, ui ) 
+		{
+			var id = ui.draggable.data('id');			
+			if(player_counter < player_limit)
+			{
+				$( this ).find( ".placeholder" ).remove();
+				$( "<li class='list-group-item' data-id='"+id+"'></li>" ).html( "<span class='badge'><a href='#' class='remove-player'><span class='glyphicon glyphicon-remove'></span></a></span>"+ui.draggable.text() ).appendTo( "#player_cart ul" );
+				$("#player_list").append("<input type='hidden' name='players[]' value='" + id + "'>");
+				ui.draggable.addClass("listed");
+				player_counter++;
+				check_player_counter();
+			}
+			else
+			{
+				$(this).droppable("disable");
+				$("#notices").html("<div class='alert alert-danger'>Cannot Add more than 11 players</div>");
+				$("#notices").show();
+			}
+		}
+	}).sortable(
+	{
+		items: "li:not(.placeholder)",
+		sort: function() 
+		{
+			// gets added unintentionally by droppable interacting with sortable
+			// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+			$( this ).removeClass( "ui-state-default" );
+		}
+	});
+
+	$(document).on('click' , '.remove-player' , function()
+	{
+		$("#notices").hide();
+		var id = $(this).closest(".list-group-item").data('id');
+		$(this).closest(".list-group-item").remove();
+		$("#player_list input[value='" + id + "']").remove();
+		player_counter--;
+		check_player_counter();
+		if($(".drag[data-id='" + id + "']").hasClass("listed"))
+		{
+			$(".drag[data-id='" + id + "']").removeClass("listed")
+		}
+		if (player_counter <= player_limit)
+		{
+			$( "#player_cart" ).droppable("enable");
+		}
+		if(player_counter == 0)
+		{
+			$("#player_cart ul").append("<li class='placeholder list-group-item'>Add your Players here</li>");
+		}
+	});
+
 	$(".validate_form").validationEngine('attach', {
 		promptPosition : "topLeft", 
 		binded: false
@@ -125,5 +193,19 @@ $(document).ready(function()
 		});
 	});
 });
+
+function check_player_counter()
+{
+	var player_counter = $("#player_cart ul li:not(.placeholder)").length;
+	var player_limit = 11;
+	if (player_counter < player_limit)
+	{
+		$("button#update_player").attr("disabled",true);
+	}
+	else
+	{
+		$("button#update_player").attr("disabled",false);
+	}
+}
 
 		

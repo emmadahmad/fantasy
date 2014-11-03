@@ -1,6 +1,6 @@
 <h2 class="page-header">Add Country</h2>
 <div class="inner_content">
-	<form role="form" id="frm_add_country" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addCountry" method="post">
+	<form role="form" id="frm_add_country" class="validate_form" enctype="multipart/form-data" action="<?php echo base_url(); ?>admin/form_requests/addCountry" method="post">
 		<div class="form-group">
 			<label for="country_name">Country Name</label>
 			<input type="text" class="form-control validate[required]" id="country_name" name="country_name" placeholder="Country Name" data-prompt-position="topLeft">

@@ -64,6 +64,13 @@
 						</div>
 						<br>
 						<div class="row">
+							<div class="col-md-4">
+								<label for="man_of_the_match">Man of the Match</label>
+								<?php echo form_dropdown('man_of_the_match', $all_players, 0, 'id="man_of_the_match" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+							</div>
+						</div>
+						<br>
+						<div class="row">
 							<div class="col-md-12">
 								<button type="submit" class="btn btn-primary">Save</button>
 								<a href="<?php echo base_url(); ?>admin/matches/view_match/<?php echo $match->match_id; ?>" class="btn btn-default" role="button">Back</a>
@@ -142,10 +149,10 @@
 										<label for="overs-<?php echo $id; ?>">Overs</label>
 										<input type="text" class="form-control validate[required]" id="overs-<?php echo $id; ?>" name="overs-<?php echo $id; ?>" placeholder="Overs" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['overs']) ? $winning_players_stats[$id]['overs'] : ''; ?>">
 									</div>
-									<div class="col-md-2">
+									<!--<div class="col-md-2">
 										<label for="wickets-<?php echo $id; ?>">Wickets</label>
 										<input type="text" class="form-control validate[required]" id="wickets-<?php echo $id; ?>" name="wickets-<?php echo $id; ?>" placeholder="Wickets" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['wickets']) ? $winning_players_stats[$id]['wickets'] : ''; ?>">
-									</div>
+									</div>-->
 									<div class="col-md-2">
 										<label for="bowl_runs-<?php echo $id; ?>">Runs</label>
 										<input type="text" class="form-control validate[required]" id="bowl_runs-<?php echo $id; ?>" name="bowl_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($winning_players_stats[$id]['bowl_runs']) ? $winning_players_stats[$id]['bowl_runs'] : ''; ?>">
@@ -235,10 +242,10 @@
 										<label for="overs-<?php echo $id; ?>">Overs</label>
 										<input type="text" class="form-control validate[required]" id="overs-<?php echo $id; ?>" name="overs-<?php echo $id; ?>" placeholder="Overs" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['overs']) ? $losing_players_stats[$id]['overs'] : ''; ?>">
 									</div>
-									<div class="col-md-2">
+									<!--<div class="col-md-2">
 										<label for="wickets-<?php echo $id; ?>">Wickets</label>
 										<input type="text" class="form-control validate[required]" id="wickets-<?php echo $id; ?>" name="wickets-<?php echo $id; ?>" placeholder="Wickets" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['wickets']) ? $losing_players_stats[$id]['wickets'] : ''; ?>">
-									</div>
+									</div>-->
 									<div class="col-md-2">
 										<label for="bowl_runs-<?php echo $id; ?>">Runs</label>
 										<input type="text" class="form-control validate[required]" id="bowl_runs-<?php echo $id; ?>" name="bowl_runs-<?php echo $id; ?>" placeholder="Runs" data-prompt-position="topLeft" value="<?php echo isset($losing_players_stats[$id]['bowl_runs']) ? $losing_players_stats[$id]['bowl_runs'] : ''; ?>">

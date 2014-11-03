@@ -100,6 +100,19 @@ class Generic_model extends CI_Model
     }
   }
 
+  function insert_batch_into($table_name, $data)
+  {
+    $result = $this->db->insert_batch($table_name, $data);
+    if($result)
+    {
+      return $this->db->insert_id();
+    }
+    else 
+    {
+      return FALSE;
+    }
+  }
+
   function delete_by_key($table_name, $key, $value)
   {
     $this->db->where($key, $value);
@@ -137,6 +150,20 @@ class Generic_model extends CI_Model
       return TRUE;
     }
     else 
+    {
+      return FALSE;
+    }
+  }
+
+  function exists($table, $keys)
+  {
+    $this->db->where($keys);
+    $query = $this->db->get($table);
+    if ($query->num_rows() > 0)
+    {
+      return TRUE;
+    }
+    else
     {
       return FALSE;
     }

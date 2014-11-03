@@ -74,3 +74,13 @@ function players_stats($players)
   }
   return $array;
 }
+
+function simplify_team_array($team)
+{
+  $array = array();
+  foreach ($team as $cont)
+  {
+    array_push($array, $cont->player_id);
+  }
+  return $array;
+}

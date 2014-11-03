@@ -21,8 +21,8 @@
         <li class="<?php echo ($page_name=='contact'?'active':''); ?>"><a href="<?php echo base_url(); ?>fantasy/contact">Contact Us</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Login</a></li>
-        <li><a href="#">Register</a></li>
+        <li><a href="<?php echo base_url(); ?>fantasy/login">Login</a></li>
+        <li><a href="<?php echo base_url(); ?>fantasy/signup">Register</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>

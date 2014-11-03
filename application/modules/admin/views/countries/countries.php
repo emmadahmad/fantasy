@@ -20,7 +20,7 @@
 				<?php foreach($countries as $cont): ?>
 				<tbody>
 					<tr>
-						<td><?php echo $cont->country_flag; ?></td>
+						<td><img src="/uploads/flags/<?php echo $cont->country_flag; ?>" width="20" alt="Responsive image"></td>
 						<td><?php echo $cont->country_id; ?></td>
 						<td><?php echo $cont->country_name; ?></td>
 						<td><a href="<?php echo base_url(); ?>admin/countries/edit_country/<?php echo $cont->country_id; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>

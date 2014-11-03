@@ -14,41 +14,33 @@ class users_model extends CI_Model
     parent::__construct();
   }
 
-  function login($email, $password, $usertype) {
-    $userName = $this->db->escape($userName);
-    $password = $this->db->escape($password);
-     $email = $this->db->escape($email);
-    //AND user_type = $usertype
-    $query = $this->db->query("SELECT user_id, user_name, first_name, last_name, user_type, status,profile_image,availble_credits,is_free_available FROM users WHERE email = $email AND password = $password ");
-    $numRows = $query->num_rows();
-    
-    if ($query->num_rows() > 0) {
-      $row = $query->row();
-    }
-    // wrong username or password
-    if ($numRows == 0) {
-      return USER_INVALID;
-    } else if ($numRows > 0 && $row->status == USER_VALID) {
-      //login successful
-      //create user sessions
-      $userSessionArray = array(
-          'is_login' => TRUE,
-          'user_id' => $row->user_id,
-          'user_name' => $row->user_name,
-          'first_name' => $row->first_name,
-          'last_name' => $row->last_name,
-          'name' => $row->first_name . ' ' . $row->last_name,
-          'email'=>$row->email,
-          'user_type' => $row->user_type,
-          'profile_image' => $row->profile_image,
-          'availble_credits' => $row->availble_credits,
-          'is_free_available' => $row->is_free_available,
-      );
-      set_session($userSessionArray);
+  function user_exists($email)
+  {
+    $this->db->where('email', $email);
+    $query = $this->db->get('users');
+    if ($query->num_rows() > 0)
+    {
       return USER_VALID;
-    } else {
-      // user is block
-      return USER_BLOCKED;
+    }
+    else
+    {
+      return USER_NA;
+    }
+  }
+
+  function login($email, $password)
+  {
+    $this->db->where('email', $email);
+    $this->db->where('password', $password);
+    $query = $this->db->get('users');
+
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return USER_INVALID;
     }
   }
 
@@ -79,5 +71,6 @@ class users_model extends CI_Model
       return RETURN_DUPLICATE;
     }
   }
+}
 
 ?>

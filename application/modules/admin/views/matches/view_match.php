@@ -1,4 +1,11 @@
-<h2 class="page-header"><?php echo $match->home; ?> VS <?php echo $match->away; ?> <small><a href="<?php echo base_url(); ?>admin/matches/add_match_details/<?php echo $match->match_id; ?>"><span class="glyphicon glyphicon-plus-sign"></span> Add Details</a></small></h2>
+<h2 class="page-header"><?php echo $match->home; ?> VS <?php echo $match->away; ?>
+	<small>
+		<a href="<?php echo base_url(); ?>admin/matches/add_match_details/<?php echo $match->match_id; ?>">
+			<span class="glyphicon glyphicon-plus-sign"></span> Add Details
+		</a>
+	</small>
+</h2>
+
 <div class="inner_content">
 	<div class="row">
 		<div class="col-md-4">
@@ -29,7 +36,10 @@
 			</dl>
 		</div>
 		<div class="col-md-4">
-			<p>Place for Picture thumbnail</p>
+			<form role="form" id="frm_add_loser_details" action="<?php echo base_url(); ?>admin/form_requests/calculatePoints" method="post">
+				<input type="hidden" name="match_id" value="<?php echo $match->match_id; ?>">
+				<button type="submit" class="btn btn-primary">Calculate Points</button>
+			</form>
 		</div>
 	</div>
 	<br>

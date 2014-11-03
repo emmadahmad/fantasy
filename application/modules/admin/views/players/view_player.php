@@ -19,19 +19,20 @@
 		<div class="col-md-4">
 			<dl class="dl-horizontal">
 				<dt>League Matches</dt>
-				<dd><?php echo $player_info->league_matches; ?></dd>
+				<dd><?php echo $player_league_stats->matches; ?></dd>
 
 				<dt>League Points</dt>
-				<dd><?php echo $player_info->league_points; ?></dd>
+				<dd><?php echo $player_league_stats->points; ?></dd>
 
 				<dt>League Price</dt>
-				<dd><?php echo $player_info->league_price; ?></dd>
+				<dd><?php echo $player_league_stats->price; ?></dd>
 			</dl>
 		</div>
 		<div class="col-md-4">
-			<p>Place for Picture thumbnail</p>
+			<img src="/uploads/players/<?php echo $player_stats->player_photo; ?>" width="100" alt="Responsive image">
 		</div>
 	</div>
+	<br>
 	<div class="panel-group" id="player_accordian">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -97,13 +98,13 @@
 									<tbody id="player_table_body">
 									<?php if(!empty($batting_stats)): ?>			
 									<tr>
-										<td><?php echo $player_stats->matches; ?></td>
-										<td><?php echo $batting_stats->innings; ?></td>
-										<td><?php echo $batting_stats->not_outs; ?></td>
-										<td><?php echo $batting_stats->balls_faced; ?></td>
-										<td><?php echo $batting_stats->runs; ?></td>
-										<td><?php echo $player_stats->batting_avg; ?></td>
-										<td><?php echo $player_stats->batting_sr; ?></td>
+										<td><?php echo $player_league_stats->matches; ?></td>
+										<td><?php echo $player_league_stats->innings_batted; ?></td>
+										<td><?php echo $player_league_stats->matches; ?></td>
+										<td><?php echo $player_league_stats->matches; ?></td>
+										<td><?php echo $player_league_stats->matches; ?></td>
+										<td><?php echo $player_league_stats->batting_avg; ?></td>
+										<td><?php echo $player_league_stats->batting_sr; ?></td>
 									</tr>							
 									<?php else: ?>
 										<tr>

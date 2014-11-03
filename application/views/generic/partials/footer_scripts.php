@@ -9,4 +9,5 @@
 <script src="<?php echo base_url(); ?>assets/js/vendors/jquery.validationEngine-en.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vendors/jquery.spin.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vendors/jquery.blockUI.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vendors/jquery-ui.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/scripts.js"></script>

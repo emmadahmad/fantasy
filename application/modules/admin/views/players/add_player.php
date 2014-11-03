@@ -1,22 +1,34 @@
 <h2 class="page-header">Add Player</h2>
 <div class="inner_content">
-	<form role="form" id="frm_add_player_info" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addPlayerInfo" method="post">
+	<form role="form" id="frm_add_player_info" enctype="multipart/form-data" class="validate_form" action="<?php echo base_url(); ?>admin/form_requests/addPlayerInfo" method="post">
 		<div class="row">
 			<div class="col-md-3">
 				<label for="player_name">Player Name</label>
 				<input type="text" class="form-control validate[required]" id="player_name" name="player_name" placeholder="Player Name" data-prompt-position="topLeft">
 			</div>
 			<div class="col-md-3">
-				<label for="player_name">Matches</label>
-				<input type="text" class="form-control validate[required]" id="matches" name="matches" placeholder="Matches" data-prompt-position="topLeft">
-			</div>
-			<div class="col-md-3">
 				<label for="country">Country</label>
 				<?php echo form_dropdown('country', $countries, 0, 'id="countries" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 				<label for="player_type">Player Type</label>
 				<?php echo form_dropdown('player_type', $player_types, 0, 'id="player_type" class="form-control validate[required]" data-prompt-position="topLeft"'); ?>
+			</div>
+			<div class="col-md-2">
+				<label for="matches">Matches</label>
+				<input type="text" class="form-control validate[required]" id="matches" name="matches" placeholder="Matches" data-prompt-position="topLeft">
+			</div>
+			<div class="col-md-2">
+				<label for="price">Price (Million)</label>
+				<input type="text" class="form-control validate[required]" id="price" name="price" placeholder="Price in Millions" data-prompt-position="topLeft">
+			</div>		
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-3">
+				<label for="player_photo">Player Photo</label>
+				<input type="file" id="player_photo" name="player_photo">
+	    		<p class="help-block">Dimensions of flag</p>
 			</div>
 		</div>
 		<br>
