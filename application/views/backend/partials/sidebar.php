@@ -14,9 +14,4 @@
     <li class="<?php echo ($page_name=='matches'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/matches">Matches</a></li>
     <li class="<?php echo ($page_name=='teams'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/teams">Teams</a></li>
   </ul>
-  <ul class="nav nav-sidebar">
-    <li class="<?php echo ($page_name=='#'?'active':''); ?>"><a href="">Nav item again</a></li>
-    <li class="<?php echo ($page_name=='#'?'active':''); ?>"><a href="">One more nav</a></li>
-    <li class="<?php echo ($page_name=='#'?'active':''); ?>"><a href="">Another nav item</a></li>
-  </ul>
 </div>
