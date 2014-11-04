@@ -373,7 +373,6 @@ class Form_requests extends CI_Controller
 		            'user_name' => post('user_name'),
 		            'user_type' => post('user_type'),
 		            'email' => post('email'),
-		            'password' => post('password'),
 		            'country' => post('country'),
 		            'gender' => post('gender')
 		        );

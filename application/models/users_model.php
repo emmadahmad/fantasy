@@ -76,6 +76,20 @@ class users_model extends CI_Model
     }
   }
 
+  function signup($data)
+  {
+    $this->db->set($data);
+    $result = $this->db->insert('users');
+    if($result)
+    {
+      return RETURN_SUCCESS;
+    }
+    else
+    {
+      return RETURN_FAILURE;
+    }
+  }
+
   function registerUser($data) {
     if (get_db_value('users', 'user_name', array('user_name' => $data['user_name'])) == FALSE) {
       $this->db->set($data);

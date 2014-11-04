@@ -97,6 +97,74 @@ class Form_requests extends CI_Controller
 		redirect(base_url()."fantasy/login");
 	}
 
+	public function signup()
+	{
+		if(!empty($_POST))
+		{
+			$email = post('email');
+			$user_type = USER_NORMAL;
+			$user_name = post('user_name');
+			$country = post('country');
+			$password = post('password');
+			$confirm_password = post('confirm_password');
+
+			$signup_data = array(
+				'user_name' => $user_name,
+				'user_type' => $user_type,
+				'email' => $email,
+				'password' => $password,
+				'country' => $country,
+				'gender' => 'Male'
+			);
+
+			if($password != $confirm_password)
+			{
+				$alert_data = array(
+            		'alert'  => TRUE,
+					'alert_type'     => "danger",
+					'alert_message' => "Passwords do not match."
+				);
+			}
+			else
+			{
+				if($this->users->user_exists($email) != USER_VALID)
+				{
+					$res = $this->users->signup($signup_data);
+					if($res == USER_INVALID)
+					{
+						$alert_data = array(
+		            		'alert'  => TRUE,
+							'alert_type'     => "danger",
+							'alert_message' => "Wrong username or password. Please try again."
+						);
+					}
+					else
+					{
+						redirect(base_url()."fantasy/login");
+					}
+				}
+				else if($this->users->user_exists($email) == USER_VALID)
+				{
+					$alert_data = array(
+	            		'alert'  => TRUE,
+						'alert_type'     => "danger",
+						'alert_message' => "User already exists."
+					);
+				}
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "Fields cannot be empty"
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."fantasy/signup");
+	}
+
 	public function addTeam()
 	{
 		if(!empty($_POST))

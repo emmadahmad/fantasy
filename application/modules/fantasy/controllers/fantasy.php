@@ -79,9 +79,20 @@ class Fantasy extends CI_Controller
 
 	public function signup()
 	{
-		$data['content'] = $this->uri->segment(2);
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+               'alert'  => FALSE,
+               'alert_type'     => null,
+               'alert_message' => null
+           	);
+			$this->session->set_userdata($alert_data);
+		}
+		
 		$this->template->title('Fantasy Cricket', 'Signup');
-
 		$this->template->set_layout('no_header_no_footer', 'frontend')->
 		build('signup.php', $data);
 	}
