@@ -136,6 +136,7 @@ class Players_model extends CI_Model
     $this->db->from('players');
     $this->db->join('player_match_stats', 'players.player_id = player_match_stats.player_id');
     $this->db->where('players.player_type', $player_type);
+    $this->db->order_by('player_match_stats.price DESC');
     $query = $this->db->get();
     if ($query->num_rows() > 0)
     {

@@ -50,13 +50,27 @@ class Form_requests extends CI_Controller
 				}
 				else
 				{
+					$team_details = $this->general->get_all_by_key('teams', 'manager', $res[0]->user_id);
+					$current_lineup = $this->team_players->get_user_players($res[0]->user_id);
+					if($current_lineup)
+					{
+						$curr_lineup = simplify_team_array($current_lineup);
+						$team_value = $this->player_stats->team_value($curr_lineup);
+					}
+					else
+					{
+						$team_value = 0;
+					}
 					$userSessionArray = array(
 						'is_client_login' => TRUE,
 						'user_id' => $res[0]->user_id,
 						'user_name' => $res[0]->user_name,
 						'email'=>$res[0]->email,
 						'country' => $res[0]->country,
-						'gender' => $res[0]->gender
+						'gender' => $res[0]->gender,
+						'team_cash' => $team_details[0]->cash,
+						'team_points' => $team_details[0]->points,
+						'team_value' => $team_value
 					);
 					set_session($userSessionArray);
 					redirect(base_url()."fantasy");
@@ -95,6 +109,12 @@ class Form_requests extends CI_Controller
 
 			if($res)
 			{
+				$team_details = $this->general->get_all_by_key('teams', 'manager', post('manager'));
+				$userSessionArray = array(
+					'team_cash' => $team_details[0]->cash,
+					'team_points' => $team_details[0]->points
+				);
+				set_session($userSessionArray);
 				$alert_data = array(
 					'alert'  => TRUE,
 					'alert_type'     => "success",
@@ -127,58 +147,97 @@ class Form_requests extends CI_Controller
 		if(!empty($_POST))
 		{
 			$new_lineup = $_POST['players'];
+			$cash_available = $this->session->userdata('team_cash');
 			$user_id = $this->session->userdata('user_id');
 			$current_lineup = $this->team_players->get_user_players($user_id);
-			$curr_lineup = simplify_team_array($current_lineup);
-			$data_db = array();
-			if(!$current_lineup)
+			$curr_lineup = simplify_team_array($current_lineup);			
+			$new_team_value = $this->player_stats->team_value($new_lineup);
+			$cash_update = 15-$new_team_value;
+
+			$rules = team_rules($new_lineup);
+			if($rules)
 			{
-				foreach ($new_lineup as $cont) 
+				if($new_team_value <= 15)
 				{
-					$data = array(
-						'user_id' => $user_id,
-						'player_id' => $cont
-					);
-					array_push($data_db, $data);
+					$data_db = array();
+					if(!$current_lineup)
+					{
+						foreach ($new_lineup as $cont) 
+						{
+							$data = array(
+								'user_id' => $user_id,
+								'player_id' => $cont
+							);
+							array_push($data_db, $data);
+						}
+						$res = $this->general->insert_batch_into('team_players', $data_db);
+						$alert_data = array(
+							'alert'  => TRUE,
+							'alert_type'     => "success",
+							'alert_message' => "Players have been added successfully."
+						);
+					}
+					else
+					{
+						$old_players = array();
+						$new_players = array();
+						foreach ($current_lineup as $cont) 
+						{
+							if(!in_array($cont->player_id, $new_lineup))
+							{
+								array_push($old_players, $cont->player_id);
+							}
+						}
+						foreach ($new_lineup as $cont) 
+						{
+							if(!in_array($cont, $curr_lineup))
+							{
+								array_push($new_players, $cont);
+							}
+						}
+
+						for($i = 0 ; $i < count($new_players) ; $i++)
+						{
+							$data = array('player_id' => $new_players[$i]);
+							$keys = array('user_id' => $user_id, 'player_id' => $old_players[$i]);
+							$this->general->update_by_keys('team_players', $keys, $data);
+
+							$data = array('cash' => $cash_update);
+							$keys = array('manager' => $user_id);
+							$this->general->update_by_keys('teams', $keys, $data);
+						}
+						$team_value = $this->player_stats->team_value($new_lineup);
+						$userSessionArray = array(
+							'team_value' => $team_value,
+							'team_cash' => $cash_update
+						);
+						set_session($userSessionArray);
+
+						$alert_data = array(
+							'alert'  => TRUE,
+							'alert_type'     => "success",
+							'alert_message' => "Players have been updated successfully."
+						);
+					}
 				}
-				$res = $this->general->insert_batch_into('team_players', $data_db);
-				$alert_data = array(
-					'alert'  => TRUE,
-					'alert_type'     => "success",
-					'alert_message' => "Players have been added successfully."
-				);
+				else
+				{
+					$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "danger",
+						'alert_message' => "The price of team exceeds your team budget. Please select your players again."
+					);
+				}
+					
 			}
 			else
 			{
-				$old_players = array();
-				$new_players = array();
-				foreach ($current_lineup as $cont) 
-				{
-					if(!in_array($cont->player_id, $new_lineup))
-					{
-						array_push($old_players, $cont->player_id);
-					}
-				}
-				foreach ($new_lineup as $cont) 
-				{
-					if(!in_array($cont, $curr_lineup))
-					{
-						array_push($new_players, $cont);
-					}
-				}
-
-				for($i = 0 ; $i < count($new_players) ; $i++)
-				{
-					$data = array('player_id' => $new_players[$i]);
-					$keys = array('user_id' => $user_id, 'player_id' => $old_players[$i]);
-					$this->general->update_by_keys('team_players', $keys, $data);
-				}
 				$alert_data = array(
 					'alert'  => TRUE,
-					'alert_type'     => "success",
-					'alert_message' => "Players have been updated successfully."
+					'alert_type'     => "danger",
+					'alert_message' => "You must have atleast 4 and atmost 6 Batsmen, atleast 3 and atmost 5 Bowlers, atmost 3 All rounders and 1 Wicket Keeper."
 				);
-			}
+			}	
 		}
 		else
 		{

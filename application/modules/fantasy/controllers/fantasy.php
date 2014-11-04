@@ -12,6 +12,7 @@ class Fantasy extends CI_Controller
         $this->load->model ( 'generic_model', 'general' );
         $this->load->model ( 'players_model', 'players' );
         $this->load->model ( 'team_players_model', 'team_players' );
+        $this->load->model ( 'player_match_stats_model', 'player_stats' );
 
         $this->load->helper('forms_loader');        
 
@@ -105,7 +106,9 @@ class Fantasy extends CI_Controller
 	}
 	public function how_to_play()
 	{
-		$data['content'] = $this->uri->segment(2);
+		$page = $this->general->get_all_by_key('pages','page_name','how_to_play');
+		$content = $page[0]->page_content;
+		$data['content'] = $content;
 		$this->template->title('Fantasy Cricket', 'How To Play');
 
 		$this->template->set_layout('header_footer', 'frontend')->
@@ -169,10 +172,21 @@ class Fantasy extends CI_Controller
 			$all_rounders = $this->players->get_player_stats_by_type(ALL_ROUNDER);
 			$wicket_keepers = $this->players->get_player_stats_by_type(WICKET_KEEPER);
 			$current_lineup = $this->team_players->get_user_players($user_id);
-			$curr_lineup = simplify_team_array($current_lineup);
+			if($current_lineup)
+			{
+				$curr_lineup = simplify_team_array($current_lineup);
+				$team_value = $this->player_stats->team_value($curr_lineup);
+			}
+			else
+			{
+				$team_value = 0;
+			}
 
 			$data['team_id'] = $team_details[0]->team_id;
 			$data['team_name'] = $team_details[0]->team_name;
+			$data['team_points'] = $team_details[0]->points;
+			$data['team_cash'] = $team_details[0]->cash;
+			$data['team_value'] = $team_value;
 			$data['batsmen'] = $batsmen;
 			$data['bowlers'] = $bowlers;
 			$data['all_rounders'] = $all_rounders;

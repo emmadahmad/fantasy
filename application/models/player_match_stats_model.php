@@ -27,5 +27,21 @@ class Player_match_stats_model extends CI_Model
       return FALSE;
     }
   }
+
+  function team_value($player_ids)
+  {
+    $this->db->select("SUM(price) as price");
+    $this->db->where_in('player_id', $player_ids);
+    $query = $this->db->get('player_match_stats');
+    if ($query->num_rows() > 0)
+    {
+      $row = $query->result();
+      return $row[0]->price;
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
 }
 ?>

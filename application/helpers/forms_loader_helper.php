@@ -15,6 +15,16 @@ function select_countries($countries)
   return $array;
 }
 
+function select_user_types($user_types)
+{
+  $array = array();
+  foreach($user_types as $cont)
+  {
+    $array[$cont['id']] = $cont['type_name'];
+  }
+  return $array;
+}
+
 function select_venues($venues)
 {
   $array = array();

@@ -9,7 +9,7 @@ function authenticate_client()
 {
 	if(!get_session("is_client_login") && !get_session('user_id'))
 	{
-		 redirect('/fantasy/login', 'refresh');
+		redirect(base_url().'fantasy/login', 'refresh');
 	}
 }
 
@@ -17,13 +17,25 @@ function authenticate_admin()
 {
   if(!get_session("is_admin_login") && !get_session('admin_id'))
   {
-     //redirect('/translation/frontend/projects/message', 'refresh');
+    redirect(base_url().'admin/login', 'refresh');
   }
 }
 
 function is_client_logged_in()
 {
   if(!get_session("is_client_login") && !get_session('user_id'))
+  {
+     return FALSE;
+  }
+  else
+  {
+    return TRUE;
+  }
+}
+
+function is_admin_logged_in()
+{
+  if(!get_session("is_admin_login") && !get_session('admin_id'))
   {
      return FALSE;
   }

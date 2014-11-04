@@ -6,13 +6,15 @@ class Admin extends CI_Controller
 	public function __construct() 
 	{
         parent::__construct();
-        $logged_in = 1;
+        $logged_in = is_admin_logged_in();
 
         $this->load->model ( 'pages_model', 'pages' );
         $this->load->model ( 'countries_model', 'countries' );
         $this->load->model ( 'matches_model', 'matches' );
         $this->load->model ( 'players_model', 'players' );
         $this->load->model ( 'generic_model', 'general' );
+        $this->load->model ( 'teams_model', 'teams' );
+        $this->load->model ( 'users_model', 'users' );
 
         $this->load->helper('form');
         $this->load->helper('forms_loader');
@@ -34,12 +36,45 @@ class Admin extends CI_Controller
     }
 
 	public function index()
-	{		
+	{
+		authenticate_admin();
 		$data['content'] = "HELLO";
 		$this->template->title('Admin', 'Dashboard');
 
 		$this->template->set_layout('header_footer', 'backend')->
 		build('dashboard.php', $data);
+	}
+
+	public function logout()
+	{
+		$userSessionArray = array(
+			'is_admin_login' => FALSE,
+			'admin_id' => NULL,
+			'admin_name' => NULL,
+			'admin_email'=> NULL
+		);
+		set_session($userSessionArray);
+		redirect(base_url()."admin");
+	}
+
+	public function login()
+	{
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+               'alert'  => FALSE,
+               'alert_type'     => null,
+               'alert_message' => null
+           	);
+			$this->session->set_userdata($alert_data);
+		}
+
+		$this->template->title('Fantasy Cricket', 'Admin Login');
+		$this->template->set_layout('no_header_no_footer', 'frontend')->
+		build('login.php', $data);
 	}
 
 	/*
@@ -50,6 +85,7 @@ class Admin extends CI_Controller
 
 	public function pages($action=null,$page_name=null)
 	{
+		authenticate_admin();
 		$pages = $this->general->get_all('pages');
 		$data['pages'] = $pages;
 		if($this->session->userdata('alert'))
@@ -120,6 +156,7 @@ class Admin extends CI_Controller
 
 	public function countries($action=null,$country_id=null)
 	{
+		authenticate_admin();
 		$countries = $this->general->get_all('countries');
 		$data['countries'] = $countries;
 		if($this->session->userdata('alert'))
@@ -192,6 +229,7 @@ class Admin extends CI_Controller
 
 	public function players($action=null,$player_id=null)
 	{
+		authenticate_admin();
 		$players = $this->players->get_all_country_players();
 		$countries = $this->general->get_all('countries');
 		$player_types = $this->general->get_all('player_types');
@@ -296,6 +334,7 @@ class Admin extends CI_Controller
 
 	public function venues($action=null,$venue_id=null)
 	{
+		authenticate_admin();
 		$venues = $this->general->get_all('venues');
 		$data['venues'] = $venues;
 		if($this->session->userdata('alert'))
@@ -366,6 +405,7 @@ class Admin extends CI_Controller
 
 	public function matches($action=null,$match_id=null)
 	{
+		authenticate_admin();
 		$matches = $this->matches->get_all_matches();
 		$countries = $this->general->get_all('countries');
 		$dismissal_types = $this->general->get_all('dismissal_types');
@@ -516,27 +556,107 @@ class Admin extends CI_Controller
 		}			
 	}
 
-
-
-
+	/*
+	*
+	* TEAMS
+	*
+	*/
 
 	public function teams()
 	{
-		$data['content'] = $this->uri->segment(2);
+		authenticate_admin();
+		$teams = $this->teams->get_teams();
+
+		$data['teams'] = $teams;
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+
 		$this->template->title('Admin', 'Manage Teams');
-
 		$this->template->set_layout('header_footer', 'backend')->
-		build('teams.php', $data);
+		build('teams/teams.php', $data);
 	}
 
-	public function users()
+	/*
+	*
+	* USERS
+	*
+	*/
+
+	public function users($action=null,$user_id=null)
 	{
-		$data['content'] = $this->uri->segment(2);
-		$this->template->title('Admin', 'Manage Users');
-
-		$this->template->set_layout('header_footer', 'backend')->
-		build('players.php', $data);
+		authenticate_admin();
+		$users = $this->users->get_all();
+		$user_types = $this->general->get_all('user_types');
+		$data['users'] = $users;
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+		
+		if($user_id != null)
+		{
+			$user = $this->general->get_all_by_key('users','user_id',$user_id);
+			$data_edit['user'] = $user[0];
+		}
+		
+		if($action == null)
+		{			
+			$this->template->title('Admin', 'Manage Users');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('users/users.php', $data);
+		}
+		else if($action == 'add_user')
+		{
+			$data['user_types'] = select_user_types(object_to_array($user_types));
+			$this->template->title('Admin', 'Add New User');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('users/add_user.php', $data);
+		}
+		else if($action == 'edit_user')
+		{
+			$data_edit['user_types'] = select_user_types(object_to_array($user_types));
+			$this->template->title('Admin', 'Update User');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('users/edit_user.php', $data_edit);
+		}
+		else if($action == 'delete_user')
+		{
+			if($this->general->delete_by_key('users','user_id',$user_id))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Your user has been successfully deleted."
+				);
+			}
+			else 
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "We encoutered a problem deleting the user. Please try again."
+				);
+			}
+			$this->session->set_userdata($alert_data);
+			redirect(base_url()."admin/users");
+		}			
 	}
-
-
 }

@@ -17,7 +17,7 @@
 
   <!-- END HEADER -->
 
-  <div class="container">
+  <div class="container frontend">
     <!-- Main component for a primary marketing message or call to action -->
     <?php echo $template['body']; ?>
   </div> <!-- /container -->

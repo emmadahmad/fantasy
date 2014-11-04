@@ -15,7 +15,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="<?php echo ($page_name!='help'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin">Dashboard</a></li>
         <li class="<?php echo ($page_name=='help'?'active':''); ?>"><a href="#">Help</a></li>
-        <li><a href="#">Logout</a></li>
+        <li><a href="<?php echo base_url(); ?>admin/logout">Logout</a></li>
       </ul>
     </div>
   </div>

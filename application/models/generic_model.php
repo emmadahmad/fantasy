@@ -31,6 +31,24 @@ class Generic_model extends CI_Model
     }
   }
 
+  function get_some($table_name, $columns, $order_by = null)
+  {
+    if($order_by != null)
+    {
+      $this->db->order_by($order_by);
+    }
+    $this->db->select($columns);
+    $query = $this->db->get($table_name);
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
+
   function get_by_keys($table_name, $keys, $order_by = null)
   {
     $this->db->where($keys);

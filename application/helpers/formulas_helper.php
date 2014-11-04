@@ -167,9 +167,13 @@ function update_points($players)
 	global $CI;
 	$CI->load->model('generic_model' , 'general');
 
+	$match_data = $CI->general->get_all('match_info', 'match_id', $players[0]->match_id);
+	$motmid = $match_data[0]->man_of_the_match;
+
 	$db_data=array();
 	foreach ($players as $cont) 
 	{
+		$motm = $cont->player_id == $motmid ? 1 : 0;
 		$db_data = array(
 			'match_id' => $cont->match_id,
 			'player_id' => $cont->player_id,
@@ -183,7 +187,11 @@ function update_points($players)
 	        'overs' => $cont->overs,
 	        'dismissal_type' => $cont->dismissal_type,
 	        'dismissed_player1' => $cont->dismissed_player1,
-	        'dismissed_player2' => $cont->dismissed_player2
+	        'dismissed_player2' => $cont->dismissed_player2,
+	        'wickets' => $cont->wickets,
+	        'catches' => $cont->catches,
+	        'runouts' => $cont->runouts,
+	        'stumps' => $cont->stumps
 	    );
 
 		$over_balls = floor($cont->overs)*6;
@@ -193,7 +201,7 @@ function update_points($players)
 		$db_data['batting_sr'] = calc_bat_sr($cont->bat_runs, $cont->balls_faced);
 		$db_data['bowling_sr'] = calc_bowl_sr($over_balls, $cont->wickets);
 		$db_data['bowling_econ'] = calc_bowl_econ($cont->bowl_runs, $cont->overs);
-    	$db_data['points'] = calculate_points($db_data);		
+    	$db_data['points'] = calculate_points($db_data, $motm);
 
     	$keys = array('match_id' => $cont->match_id, 'player_id' => $cont->player_id);
     	$res = $CI->general->update_by_keys('player_match_info', $keys, $db_data);
@@ -216,8 +224,9 @@ function update_points($players)
 	}
 }
 
-function calculate_points($data)
+function calculate_points($data,$motm = 0)
 {
+	//print_array($data);
 	global $CI;
 	$CI->load->model('generic_model' , 'general');
 	$CI->load->model ( 'player_match_info_model', 'player_match' );
@@ -237,8 +246,14 @@ function calculate_points($data)
 	$runouts_points = 0;
     
     $player_type = $CI->general->get_some_by_key('players', 'player_type', 'player_id', $data['player_id']);
-    $dismissed_players = $CI->player_match->get_player_type($data['match_id'] , $data['player_id']);
-    $player_type = $player_type[0];
+    $dismissed_players = $CI->player_match->get_dismissed_players($data['match_id'] , $data['player_id']);
+    $player_type = $player_type[0]->player_type;
+    //print_array($dismissed_players);
+
+    if($motm)
+    {
+    	$bonus_motm = 20;
+    }
 
     if($data['catches'])
     {
@@ -299,20 +314,19 @@ function calculate_points($data)
     		$bonus_neg = 0;
     	}
     }
-
     if($data['wickets'] > 0)
     {
     	foreach ($dismissed_players as $cont) 
     	{
-    		if($cont['player_type'] != BOWLER)
+    		if($cont->player_type != BOWLER)
     		{
     			$bowling_points += 25;
     		}
-    		else if($cont['player_type'] == BOWLER)
+    		else if($cont->player_type == BOWLER)
     		{
     			$bowling_points += 15;
     		}
-    	}
+    	}	    	
     }
 
     if($data['wickets'] >= 3 && $data['wickets'] < 5)
@@ -356,6 +370,7 @@ function calculate_points($data)
     $batting_points += $data['bat_runs'];
     $fielding_points = $catches_points + $stumps_points + $runouts_points;
     $total_points = $batting_points + $bowling_points + $bonus_points + $fielding_points;
+
     return $total_points;
 }
 
@@ -416,4 +431,21 @@ function calculate_stats($player_id)
     return $player_stats;
 }
 
-function 
+function team_rules($players)
+{
+	global $CI;
+	$CI->load->model('generic_model' , 'general');
+	$CI->load->model('team_players_model' , 'team_players');
+	$columns = 'batsmen, bowlers, all_rounders, wicket_keepers';   
+    $rules = $CI->general->get_some('team_rules', $columns);
+    $team_players = $CI->team_players->get_player_types($players);
+
+    if(array_search($team_players[0], $rules))
+    {
+    	return 1;
+    }
+    else
+    {
+    	return 0;
+    }
+}

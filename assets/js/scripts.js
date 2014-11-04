@@ -3,6 +3,9 @@ $(document).ready(function()
 	$("#notices").hide();
 
 	var player_limit = 11;
+	var team_cash = parseFloat($("#team_cash").text()).toFixed(1);
+	var team_value = parseFloat($("#team_value").text()).toFixed(1);
+
 	var player_counter = $("#player_cart ul li:not(.placeholder)").length;
 	$( ".drag" ).draggable({
 		appendTo: "body",
@@ -18,12 +21,20 @@ $(document).ready(function()
 		accept: ":not(.ui-sortable-helper) :not(.listed)",
 		drop: function( event, ui ) 
 		{
-			var id = ui.draggable.data('id');			
+			var id = ui.draggable.data('id');
+			var price = parseFloat(ui.draggable.data('price')).toFixed(1);
 			if(player_counter < player_limit)
 			{
 				$( this ).find( ".placeholder" ).remove();
-				$( "<li class='list-group-item' data-id='"+id+"'></li>" ).html( "<span class='badge'><a href='#' class='remove-player'><span class='glyphicon glyphicon-remove'></span></a></span>"+ui.draggable.text() ).appendTo( "#player_cart ul" );
+				$( "<li class='list-group-item ui-sortable-handle' data-id='"+id+"' data-price='"+price+"'></li>" ).html( "<span class='badge'><a href='javascript:void(0);' class='remove-player'><span class='glyphicon glyphicon-remove'></span></a></span><span class='badge'>"+price+" M</span>"+ui.draggable.text() ).appendTo( "#player_cart ul" );
 				$("#player_list").append("<input type='hidden' name='players[]' value='" + id + "'>");
+				team_value = parseFloat(team_value)+parseFloat(price);
+				team_value = team_value.toFixed(1);
+				team_cash = parseFloat(team_cash)-parseFloat(price);
+				team_cash = team_cash.toFixed(1);
+				$("#team_value").text(team_value);
+				$("#team_cash").text(team_cash);
+
 				ui.draggable.addClass("listed");
 				player_counter++;
 				check_player_counter();
@@ -50,7 +61,15 @@ $(document).ready(function()
 	{
 		$("#notices").hide();
 		var id = $(this).closest(".list-group-item").data('id');
+		var price = parseFloat($(this).closest(".list-group-item").data('price')).toFixed(1);
 		$(this).closest(".list-group-item").remove();
+		team_value = parseFloat(team_value)-parseFloat(price);
+		team_value = team_value.toFixed(1);
+		team_cash = parseFloat(team_cash)+parseFloat(price);
+		team_cash = team_cash.toFixed(1);
+		$("#team_value").text(team_value);
+		$("#team_cash").text(team_cash);
+
 		$("#player_list input[value='" + id + "']").remove();
 		player_counter--;
 		check_player_counter();

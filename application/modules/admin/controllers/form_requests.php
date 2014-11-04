@@ -14,6 +14,7 @@ class Form_requests extends CI_Controller
         $this->load->model ( 'player_match_stats_model', 'player_stats' );
         $this->load->model ( 'matches_model', 'matches' );
         $this->load->model ( 'generic_model', 'general' );
+        $this->load->model ( 'users_model', 'users' );
 
         $this->load->helper('form');
         $this->load->helper('forms_loader');
@@ -27,6 +28,56 @@ class Form_requests extends CI_Controller
 
 		$this->template->set_layout('header_footer', 'backend')->
 		build('dashboard.php', $data);
+	}
+
+	public function login()
+	{
+		if(!empty($_POST))
+		{
+			$email = post('email');
+			$password = post('password');
+			if($this->users->user_exists($email) == USER_VALID)
+			{
+				$res = $this->users->admin_login($email,$password);
+				if($res == USER_INVALID)
+				{
+					$alert_data = array(
+	            		'alert'  => TRUE,
+						'alert_type'     => "danger",
+						'alert_message' => "Wrong username or password. Please try again."
+					);
+				}
+				else
+				{
+					$userSessionArray = array(
+						'is_admin_login' => TRUE,
+						'admin_id' => $res[0]->user_id,
+						'admin_name' => $res[0]->user_name,
+						'admin_email'=>$res[0]->email
+					);
+					set_session($userSessionArray);
+					redirect(base_url()."admin");
+				}
+			}
+			else if($this->users->user_exists($email) == USER_NA)
+			{
+				$alert_data = array(
+            		'alert'  => TRUE,
+					'alert_type'     => "danger",
+					'alert_message' => "User does not exist."
+				);
+			}
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "Fields cannot be empty"
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/login");
 	}
 
 	public function addPlayerInfo()
@@ -89,8 +140,7 @@ class Form_requests extends CI_Controller
 						'alert_type'     => "warning",
 						'alert_message' => "Problem adding the player. Please try again."
 					);
-		        }
-			        
+		        }			        
 			}				
 		}
 		else
@@ -255,6 +305,107 @@ class Form_requests extends CI_Controller
 		}
 		$this->session->set_userdata($alert_data);
 		redirect(base_url()."admin/players/edit_player/".$player_id);
+	}
+
+	/*
+	*
+	USERS
+	*
+	*/
+
+		public function addUser()
+	{
+		if(!empty($_POST))
+		{
+			if($this->general->get_all_by_key('users', 'email', post('email')))
+			{
+				$alert_data = array(
+            		'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "User already exists. Please try again."
+				);
+			}
+			else
+			{
+				$db_data = array(
+		            'user_name' => post('user_name'),
+		            'user_type' => post('user_type'),
+		            'email' => post('email'),
+		            'password' => post('password'),
+		            'country' => post('country'),
+		            'gender' => post('gender')
+		        );
+		        $new_res = $this->general->insert_into('users',$db_data);
+		        $alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Your user has been added successfully."
+				);
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/users");
+	}
+
+	public function updateUser($user_id)
+	{
+		if(!empty($_POST))
+		{
+			if($this->general->if_exists('users', 'user_id', post('user_id'), 'email', post('email')))
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "warning",
+					'alert_message' => "The user already exists. Please try again."
+				);
+			}
+			else
+			{
+		        $db_data = array(
+		            'user_name' => post('user_name'),
+		            'user_type' => post('user_type'),
+		            'email' => post('email'),
+		            'password' => post('password'),
+		            'country' => post('country'),
+		            'gender' => post('gender')
+		        );
+		        $new_res = $this->general->update_by_key('users','user_id',$user_id,$db_data);
+		        if($new_res)
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "success",
+						'alert_message' => "The user has been successfully updated."
+					);
+		        }
+		        else
+		        {
+		        	$alert_data = array(
+						'alert'  => TRUE,
+						'alert_type'     => "warning",
+						'alert_message' => "We encoutered a problem updating the user. Please try again."
+					);
+		        }
+			}				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "warning",
+				'alert_message' => "The fields cannot be empty. Please try again."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/users");
 	}
 
 	/*

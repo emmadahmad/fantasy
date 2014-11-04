@@ -133,6 +133,24 @@ class Player_match_info_model extends CI_Model
     }
   }
 
+  function get_dismissed_players($match_id, $player_id)
+  {
+    $this->db->where('match_id', $match_id);
+    $this->db->where('dismissed_player1', $player_id);
+    $this->db->where('dismissal_type !=', RUN_OUT);
+    $this->db->join('players', 'player_match_info.player_id = players.player_id', 'left');
+    $query = $this->db->get('player_match_info');
+    if ($query->num_rows() > 0)
+    {
+      return $query->result();
+    }
+    else
+    {
+      return FALSE;
+    }
+
+  }
+
   
 }
 ?>

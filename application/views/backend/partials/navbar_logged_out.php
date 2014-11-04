@@ -13,7 +13,7 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Login</a></li>
+        <li class="<?php echo ($page_name=='login'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/login">Login</a></li>
         <li><a href="#">Help</a></li>
       </ul>
     </div>
