@@ -124,7 +124,8 @@ class Player_match_info_model extends CI_Model
     //$query = $this->db->get();
     if ($query->num_rows() > 0)
     {
-      $result = $query->result()[0];
+      $result = $query->result();
+      $result = $result[0];
       return $result;
     }
     else
