@@ -173,6 +173,20 @@ class Generic_model extends CI_Model
     }
   }
 
+  function update_batch($table_name, $data, $key)
+  {
+    $result = $this->db->update_batch($table_name, $data, $key);
+    print_array($this->db->last_query());
+    if($result)
+    {
+      return 'TRUE';
+    }
+    else 
+    {
+      return 'FALSE';
+    }
+  }
+
   function exists($table, $keys)
   {
     $this->db->where($keys);
@@ -200,6 +214,12 @@ class Generic_model extends CI_Model
     {
       return FALSE;
     }
+  }
+
+  function truncate_table($table)
+  {
+    $this->db->from($table); 
+    $this->db->truncate();
   }
 }
 ?>

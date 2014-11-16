@@ -1112,5 +1112,171 @@ class Form_requests extends CI_Controller
 		redirect(base_url()."admin/matches/add_match_details/" . $match_id);
 	}
 
+	public function updatePointRules()
+	{
+		if(!empty($_POST))
+		{
+			$data = array(
+				array(
+					'rule_name' => 'bat_runs',
+					'rule_points' => post('bat_runs-value'),
+					'rule_description' => post('bat_runs-description')
+				),
+				array(
+					'rule_name' => 'wicket_bowler',
+					'rule_points' => post('wicket_bowler-value'),
+					'rule_description' => post('wicket_bowler-description')
+				),
+				array(
+					'rule_name' => 'wicket_nbowler',
+					'rule_points' => post('wicket_nbowler-value'),
+					'rule_description' => post('wicket_nbowler-description')
+				),
+				array(
+					'rule_name' => 'catches',
+					'rule_points' => post('catches-value'),
+					'rule_description' => post('catches-description')
+				),
+				array(
+					'rule_name' => 'stumps',
+					'rule_points' => post('stumps-value'),
+					'rule_description' => post('stumps-description')
+				),
+				array(
+					'rule_name' => 'run_outs',
+					'rule_points' => post('run_outs-value'),
+					'rule_description' => post('run_outs-description')
+				),
+				array(
+					'rule_name' => 'bat_econ_runs',
+					'rule_points' => post('bat_econ_runs-value'),
+					'rule_description' => post('bat_econ_runs-description')
+				),
+				array(
+					'rule_name' => 'bat_econ_balls',
+					'rule_points' => post('bat_econ_balls-value'),
+					'rule_description' => post('bat_econ_balls-description')
+				),
+				array(
+					'rule_name' => 'neg_duck_nbowler',
+					'rule_points' => post('neg_duck_nbowler-value'),
+					'rule_description' => post('neg_duck_nbowler-description')
+				),
+				array(
+					'rule_name' => 'neg_duck_bowler',
+					'rule_points' => post('neg_duck_bowler-value'),
+					'rule_description' => post('neg_duck_bowler-description')
+				),
+				array(
+					'rule_name' => 'neg_nbowler',
+					'rule_points' => post('neg_nbowler-value'),
+					'rule_description' => post('neg_nbowler-description')
+				),
+				array(
+					'rule_name' => 'bonus_haul_3',
+					'rule_points' => post('bonus_haul_3-value'),
+					'rule_description' => post('bonus_haul_3-description')
+				),
+				array(
+					'rule_name' => 'bonus_haul_5',
+					'rule_points' => post('bonus_haul_5-value'),
+					'rule_description' => post('bonus_haul_5-description')
+				),
+				array(
+					'rule_name' => 'bonus_hatrick',
+					'rule_points' => post('bonus_hatrick-value'),
+					'rule_description' => post('bonus_hatrick-description')
+				),
+				array(
+					'rule_name' => 'bonus_motm',
+					'rule_points' => post('bonus_motm-value'),
+					'rule_description' => post('bonus_motm-description')
+				),
+				array(
+					'rule_name' => 'bowl_econ_overs',
+					'rule_points' => post('bowl_econ_overs-value'),
+					'rule_description' => post('bowl_econ_overs-description')
+				)				
+			);
+
+			$data_econ = array();
+
+			$bat_rv1 = post('bat_econ-val1');
+			$bat_rv2 = post('bat_econ-val2');
+			$bat_val = post('bat_econ-value');
+			$bowl_rv1 = post('bowl_econ-val1');
+			$bowl_rv2 = post('bowl_econ-val2');
+			$bowl_val = post('bowl_econ-value');
+			$bat_desc = post('bat_econ-description');
+			$bowl_desc = post('bowl_econ-description');
+
+			for($j = 0 ; $j < 5 ; $j++)
+			{
+				$temp['rule_name'] = 'bat_econ';
+				$temp['rule_val1'] = $bat_rv1[$j];
+				$temp['rule_val2'] = $bat_rv2[$j];
+				$temp['rule_points'] = $bat_val[$j];
+				if($j == 0)
+				{
+					$temp['rule_description'] = $bat_desc;
+				}
+				else
+				{
+					$temp['rule_description'] = null;
+				}
+				array_push($data_econ, $temp);
+			}
+
+			for($j = 0 ; $j < 5 ; $j++)
+			{
+				$temp['rule_name'] = 'bowl_econ';
+				$temp['rule_val1'] = $bowl_rv1[$j];
+				$temp['rule_val2'] = $bowl_rv2[$j];
+				$temp['rule_points'] = $bowl_val[$j];
+				if($j == 0)
+				{
+					$temp['rule_description'] = $bowl_desc;
+				}
+				else
+				{
+					$temp['rule_description'] = null;
+				}
+				array_push($data_econ, $temp);
+			}
+
+			$this->general->truncate_table('point_rules');
+			$new_res = $this->general->insert_batch_into('point_rules', $data);
+			$new_res = $this->general->insert_batch_into('point_rules', $data_econ);
+			if($new_res)
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "success",
+					'alert_message' => "Points have been updated successfully."
+				);
+			}
+			else
+			{
+				$alert_data = array(
+					'alert'  => TRUE,
+					'alert_type'     => "danger",
+					'alert_message' => "Problem encountered while updating points. Please try again."
+				);
+			}
+
+				
+		}
+		else
+		{
+			$alert_data = array(
+				'alert'  => TRUE,
+				'alert_type'     => "danger",
+				'alert_message' => "The fields cannot be empty."
+			);
+		}
+		$this->session->set_userdata($alert_data);
+		redirect(base_url()."admin/point_rules/edit_point_rules/");
+	}
+
 	
 }

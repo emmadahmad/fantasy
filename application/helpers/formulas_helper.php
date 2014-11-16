@@ -226,7 +226,7 @@ function update_points($players)
 
 function calculate_points($data,$motm = 0)
 {
-	//print_array($data);
+	
 	global $CI;
 	$CI->load->model('generic_model' , 'general');
 	$CI->load->model ( 'player_match_info_model', 'player_match' );
@@ -245,50 +245,78 @@ function calculate_points($data,$motm = 0)
 	$stumps_points = 0;
 	$runouts_points = 0;
     
+    $temp_rules = $CI->general->get_all('point_rules');
+    $temp_rules = object_to_array($temp_rules);
+    $rules=array();
+    $tmp_eco = array();
+
     $player_type = $CI->general->get_some_by_key('players', 'player_type', 'player_id', $data['player_id']);
     $dismissed_players = $CI->player_match->get_dismissed_players($data['match_id'] , $data['player_id']);
     $player_type = $player_type[0]->player_type;
-    //print_array($dismissed_players);
+
+    foreach ($temp_rules as $cont)
+    {
+    	if($cont['rule_name'] == 'bat_econ' || $cont['rule_name'] == 'bowl_econ')
+    	{
+    		$tmp = array(
+    			'val1' => $cont['rule_val1'],
+    			'val2' => $cont['rule_val2'],
+    			'points' => $cont['rule_points']
+			);
+			array_push($tmp_eco, $tmp);
+			if(count($tmp_eco) == 5)
+			{
+
+				$rules[$cont['rule_name']] = $tmp_eco;
+				$tmp_eco = array();
+			}   		
+    	}
+    	else
+    	{
+    		$rules[$cont['rule_name']] = $cont['rule_points'];
+    	}
+    	
+    }
 
     if($motm)
     {
-    	$bonus_motm = 20;
+    	$bonus_motm = $rules['bonus_motm'];
     }
 
     if($data['catches'])
     {
-    	$catches_points = $data['catches']*10;
+    	$catches_points = $data['catches']*$rules['catches'];
     }
     if($data['stumps'])
     {
-    	$stumps_points = $data['stumps']*10;
+    	$stumps_points = $data['stumps']*$rules['stumps'];
     }
     if($data['runouts'])
     {
-    	$runouts_points = $data['runouts']*10;
+    	$runouts_points = $data['runouts']*$rules['run_outs'];
     }
     
-    if($data['bat_runs'] >= 20 || $data['balls_faced'] >= 15)
+    if($data['bat_runs'] >= $rules['bat_econ_runs'] || $data['balls_faced'] >= $rules['bat_econ_balls'])
     {    	
-    	if($data['batting_sr'] >= 0.00 && $data['batting_sr'] <= 90.00)
+    	if($data['batting_sr'] >= $rules['bat_econ'][0]['val1'] && $data['batting_sr'] <= $rules['bat_econ'][0]['val2'])
     	{
-    		$bonus_sr = -10;
+    		$bonus_sr = $rules['bat_econ'][0]['points'];
     	}
-    	else if($data['batting_sr'] > 90.00 && $data['batting_sr'] <= 120.00)
+    	else if($data['batting_sr'] > $rules['bat_econ'][1]['val1'] && $data['batting_sr'] <= $rules['bat_econ'][1]['val2'])
     	{
-    		$bonus_sr = 0;
+    		$bonus_sr = $rules['bat_econ'][1]['points'];
     	}
-    	else if($data['batting_sr'] > 120.00 && $data['batting_sr'] <= 150.00)
+    	else if($data['batting_sr'] > $rules['bat_econ'][2]['val1'] && $data['batting_sr'] <= $rules['bat_econ'][2]['val2'])
     	{
-    		$bonus_sr = 5;
+    		$bonus_sr = $rules['bat_econ'][2]['points'];
     	}
-    	else if($data['batting_sr'] > 150.00 && $data['batting_sr'] <= 180.00)
+    	else if($data['batting_sr'] > $rules['bat_econ'][3]['val1'] && $data['batting_sr'] <= $rules['bat_econ'][3]['val2'])
     	{
-    		$bonus_sr = 10;
+    		$bonus_sr = $rules['bat_econ'][3]['points'];
     	}
-    	else if($data['batting_sr'] > 180.00)
+    	else if($data['batting_sr'] > $rules['bat_econ'][4]['val1'])
     	{
-    		$bonus_sr = 15;
+    		$bonus_sr = $rules['bat_econ'][4]['points'];
     	}
     }
 
@@ -296,18 +324,18 @@ function calculate_points($data,$motm = 0)
     {
     	if($player_type != BOWLER)
     	{
-    		$bonus_neg = -20;
+    		$bonus_neg = $rules['neg_duck_nbowler'];
     	}
     	else
     	{
-    		$bonus_neg = -10;
+    		$bonus_neg = $rules['neg_duck_bowler'];
     	}    	
     }
     else if($data['dismissal_type'] != NOT_OUT)
     {
     	if($player_type != BOWLER)
     	{
-    		$bonus_neg = -5;
+    		$bonus_neg = $rules['neg_nbowler'];
     	}
     	else
     	{
@@ -320,45 +348,45 @@ function calculate_points($data,$motm = 0)
     	{
     		if($cont->player_type != BOWLER)
     		{
-    			$bowling_points += 25;
+    			$bowling_points += $rules['wicket_nbowler'];
     		}
     		else if($cont->player_type == BOWLER)
     		{
-    			$bowling_points += 15;
+    			$bowling_points += $rules['wicket_bowler'];
     		}
     	}	    	
     }
 
     if($data['wickets'] >= 3 && $data['wickets'] < 5)
     {
-    	$bonus_wicket_hauls += 20;
+    	$bonus_wicket_hauls += $rules['bonus_haul_3'];
     }
     else if($data['wickets'] >= 5)
     {
-    	$bonus_wicket_hauls += 30;
+    	$bonus_wicket_hauls += $rules['bonus_haul_5'];
     }
 
-    if($data['overs'] >= 2)
+    if($data['overs'] >= $rules['bowl_econ_overs'])
     {
-    	if($data['bowling_econ'] >= 0.00 && $data['bowling_econ'] <= 4.00)
+    	if($data['bowling_econ'] >= $rules['bowl_econ'][0]['val1'] && $data['bowling_econ'] <= $rules['bowl_econ'][0]['val2'])
     	{
-    		$bonus_econ = 15;
+    		$bonus_econ = $rules['bowl_econ'][0]['points'];
     	}
-    	else if($data['bowling_econ'] > 4.00 && $data['bowling_econ'] <= 5.50)
+    	else if($data['bowling_econ'] > $rules['bowl_econ'][1]['val1'] && $data['bowling_econ'] <= $rules['bowl_econ'][1]['val2'])
     	{
-    		$bonus_econ = 10;
+    		$bonus_econ = $rules['bowl_econ'][1]['points'];
     	}
-    	else if($data['bowling_econ'] > 5.50 && $data['bowling_econ'] <= 7.00)
+    	else if($data['bowling_econ'] > $rules['bowl_econ'][2]['val1'] && $data['bowling_econ'] <= $rules['bowl_econ'][2]['val2'])
     	{
-    		$bonus_econ = 0;
+    		$bonus_econ = $rules['bowl_econ'][2]['points'];
     	}
-    	else if($data['bowling_econ'] > 7.00 && $data['bowling_econ'] <= 9.00)
+    	else if($data['bowling_econ'] > $rules['bowl_econ'][3]['val1'] && $data['bowling_econ'] <= $rules['bowl_econ'][3]['val2'])
     	{
-    		$bonus_econ = -10;
+    		$bonus_econ = -$rules['bowl_econ'][3]['points'];
     	}
-    	else if($data['bowling_econ'] > 9.00)
+    	else if($data['bowling_econ'] > $rules['bowl_econ'][4]['val1'])
     	{
-    		$bonus_econ = -15;
+    		$bonus_econ = $rules['bowl_econ'][4]['points'];
     	}
     }    
     $bonus_half_centuries = floor($data['bat_runs']/50)*20;

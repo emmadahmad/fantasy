@@ -41,7 +41,7 @@
 					<ul class="list-group">
 						<?php if($current_lineup): ?>
 							<?php foreach ($current_lineup as $cont): ?>
-								<li class="list-group-item" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>">
+								<li class="list-group-item" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>" data-type="<?php echo $cont->player_type; ?>">
 									<span class='badge'>
 										<a href='javascript:void(0);' class='remove-player'>
 											<span class='glyphicon glyphicon-remove'></span>
@@ -75,7 +75,7 @@
 			<?php foreach ($batsmen as $cont) : ?>
 			<?php $class_listed = in_array($cont->player_id,$curr_lineup) ? 'listed' : ''; ?>
 				<tr>
-					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>"><?php echo $cont->player_name; ?></td>
+					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>" data-type="1"><?php echo $cont->player_name; ?></td>
 					<td><?php echo $cont->points; ?></td>
 					<td><?php echo $cont->price; ?></td>
 				</tr>
@@ -95,7 +95,7 @@
 			<?php foreach ($bowlers as $cont) : ?>
 			<?php $class_listed = in_array($cont->player_id,$curr_lineup) ? 'listed' : ''; ?>
 				<tr>
-					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>"><?php echo $cont->player_name; ?></td>
+					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>" data-type="2"><?php echo $cont->player_name; ?></td>
 					<td><?php echo $cont->points; ?></td>
 					<td><?php echo $cont->price; ?></td>
 				</tr>
@@ -115,7 +115,7 @@
 			<?php foreach ($all_rounders as $cont) : ?>
 			<?php $class_listed = in_array($cont->player_id,$curr_lineup) ? 'listed' : ''; ?>
 				<tr>
-					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>"><?php echo $cont->player_name; ?></td>
+					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>" data-type="3"><?php echo $cont->player_name; ?></td>
 					<td><?php echo $cont->points; ?></td>
 					<td><?php echo $cont->price; ?></td>
 				</tr>
@@ -135,7 +135,7 @@
 			<?php foreach ($wicket_keepers as $cont) : ?>
 			<?php $class_listed = in_array($cont->player_id,$curr_lineup) ? 'listed' : ''; ?>
 				<tr>
-					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>"><?php echo $cont->player_name; ?></td>
+					<td class="drag <?php echo $class_listed; ?>" data-id="<?php echo $cont->player_id; ?>" data-price="<?php echo $cont->price; ?>" data-type="4"><?php echo $cont->player_name; ?></td>
 					<td><?php echo $cont->points; ?></td>
 					<td><?php echo $cont->price; ?></td>
 				</tr>

@@ -23,20 +23,22 @@ class Ajax extends CI_Controller
 		build('dashboard.php', $data);
 	}
 
-	public function selectCountryPlayers()
+	public function getTeamRules()
 	{
-		$country_id = $this->input->post('country_id');
-		if($country_id == 0)
+		$temp_data = $this->general->get_all('team_rules');
+		$temp_data = object_to_array($temp_data);
+		$data = array();
+		$rules = array();
+		foreach ($temp_data as $cont) 
 		{
-			$data['players'] = $this->players->get_all_country_players($country_id);
+			$data['all_rounders'] = $cont['all_rounders'];
+			$data['batsmen'] = $cont['batsmen'];
+			$data['bowlers'] = $cont['bowlers'];
+			$data['wicket_keepers'] = $cont['wicket_keepers'];
+
+			array_push($rules, $data);
 		}
-		else
-		{
-			$data['players'] = $this->players->get_country_players($country_id);
-		}		
-		$players = $this->template->set_layout('')
-			->build('players/ajax/player_data_view.php', $data, true);
-		echo $players;
+		echo json_encode($rules);
 	}
 
 	public function selectCountryMatches()

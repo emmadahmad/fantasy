@@ -13,5 +13,6 @@
     <li class="<?php echo ($page_name=='venues'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/venues">Venues</a></li>
     <li class="<?php echo ($page_name=='matches'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/matches">Matches</a></li>
     <li class="<?php echo ($page_name=='teams'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/teams">Teams</a></li>
+    <li class="<?php echo ($page_name=='point_rules'?'active':''); ?>"><a href="<?php echo base_url(); ?>admin/point_rules">Point Rules</a></li>
   </ul>
 </div>

@@ -659,4 +659,42 @@ class Admin extends CI_Controller
 			redirect(base_url()."admin/users");
 		}			
 	}
+
+	/*
+	*
+	* POINTS RULES
+	*
+	*/
+
+	public function point_rules($action=null)
+	{
+		authenticate_admin();
+		$rules = $this->general->get_all('point_rules');
+		$data['rules'] = $rules;
+		if($this->session->userdata('alert'))
+		{
+			$data['alert'] = $this->session->userdata('alert');
+			$data['alert_type'] = $this->session->userdata('alert_type');
+			$data['alert_message'] = $this->session->userdata('alert_message');
+			$alert_data = array(
+                   'alert'  => FALSE,
+                   'alert_type'     => null,
+                   'alert_message' => null
+               	);
+			$this->session->set_userdata($alert_data);
+		}
+		
+		if($action == null)
+		{			
+			$this->template->title('Admin', 'Point Rules');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('point_rules/point_rules.php', $data);
+		}
+		else if($action == 'edit_point_rules')
+		{
+			$this->template->title('Admin', 'Update Point Rules');
+			$this->template->set_layout('header_footer', 'backend')->
+			build('point_rules/edit_point_rules.php', $data);
+		}		
+	}
 }
